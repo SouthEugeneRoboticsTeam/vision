@@ -32,9 +32,8 @@ contours, _ = cv2.findContours(im_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPR
 
 # Cycle through contours and add area to array
 areas = []
-for i, c in enumerate(contours):
-    area = cv2.contourArea(c)
-    areas.append(area)
+for c in contours:
+    areas.append(cv2.contourArea(c))
 
 # Sort array of areas by size
 sorted_areas = sorted(zip(areas, contours), key = lambda x: x[0], reverse = True)
