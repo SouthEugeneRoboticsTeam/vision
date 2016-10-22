@@ -1,5 +1,6 @@
 import numpy as np
 import utils
+import cv_utils
 import cv2
 
 args = utils.get_args()
@@ -24,24 +25,14 @@ while(True):
 		# Create mask
 		im_mask = cv2.inRange(im, lower, upper)
 
-		# Find contours of the shape
-		contours, _ = cv2.findContours(im_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+		# Get largest blob
+		largest = cv_utils.get_largest(im_mask)
 
-		# Cycle through contours and add area to array
-		areas = []
-		for c in contours:
-		    areas.append(cv2.contourArea(c))
-
-		# Sort array of areas by size
-		sorted_areas = sorted(zip(areas, contours), key=lambda x: x[0], reverse=True)
-
-		if sorted_areas:
-			# Find nth largest using data[n-1][1]
-			largest = sorted_areas[0][1]
-
+		if largest is not False:
 			# Get x, y, width, height of goal
 			x, y, w, h = cv2.boundingRect(largest)
 
+			# Get area of largest blob
 			largest_area = w * h
 
 			if largest_area > args["minarea"]:
@@ -60,13 +51,10 @@ while(True):
 				cv2.circle(im_rect, (center_x, center_y), 2, (255, 0, 0), thickness=3)
 
 				# Put text on screen
-				font = cv2.FONT_HERSHEY_SIMPLEX
-				offset_string = "(" + str(offset_x) + ", " + str(offset_y) + ")"
-				cv2.putText(im_rect, offset_string, (0, 30), font, 1, (255, 0, 0))
+				cv_utils.draw_offset(im, offset_x, offset_y, (0, 30), 1, (255, 0, 0))
 
 		# Draw crosshair on the screen
-		cv2.line(im_rect, (width/2, 0), (width/2, height), (0, 0, 0), thickness=2)
-		cv2.line(im_rect, (0, height/2), (width, height/2), (0, 0, 0), thickness=2)
+		cv_utils.draw_crosshair(im_rect, width, height, (0, 0, 0), 2)
 
 		# Show the images
 		cv2.imshow("Original", im_rect)
