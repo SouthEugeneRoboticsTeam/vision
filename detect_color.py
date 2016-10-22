@@ -1,36 +1,14 @@
 import numpy as np
-import argparse
+import utils
 import cv2
 
-# Define arguments
-ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--image", help="path to image")
-ap.add_argument("-ma", "--minarea", help="minimum area for blobs")
-ap.add_argument("-lt", "--lowrgb", nargs='+', help="lower threshold for rgb vals")
-ap.add_argument("-ut", "--uprgb", nargs='+', help="upper threshold rgb vals")
-args = vars(ap.parse_args())
-
-if args["minarea"] is not None:
-    area_threshold = args["minarea"]
-else:
-    area_threshold = 1000
-
-# Define lower and upper thresholds (RGB)
-if args["lowrgb"] is not None:
-    lower = args["lowrgb"]
-else:
-    lower = [0, 20, 0]
-
-if args["uprgb"] is not None:
-    upper = args["uprgb"]
-else:
-    upper = [30, 255, 30]
+args = utils.get_args()
 
 camera = cv2.VideoCapture(0)
 
 # Make the thresholds numpy arrays
-lower = np.array(lower, dtype="uint8")
-upper = np.array(upper, dtype="uint8")
+lower = np.array(args["lowrgb"], dtype="uint8")
+upper = np.array(args["uprgb"], dtype="uint8")
 
 while(True):
 	# Read image from file
@@ -66,7 +44,7 @@ while(True):
 
 			largest_area = w * h
 
-			if largest_area > area_threshold:
+			if largest_area > args["minarea"]:
 				# Draw rectangle around goal
 				cv2.rectangle(im_rect, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
