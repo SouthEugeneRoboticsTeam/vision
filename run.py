@@ -4,4 +4,4 @@ from vision.app import Vision
 
 app = Vision()
 
-app.video()
+app.run()
