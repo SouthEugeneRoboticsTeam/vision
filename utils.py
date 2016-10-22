@@ -10,9 +10,9 @@ def get_args():
 
 	parser = configargparse.ArgParser(default_config_files=default_config, auto_env_var_prefix='VISION_')
 
-	parser.add_argument("-i", "--image", help="Path to image")
-	parser.add_argument("-ma", "--min-area", type=int, help="Minimum area for blobs")
-	parser.add_argument("-lt", "--lower-rgb", action="append", type=int, help="Lower threshold for RGB values")
-	parser.add_argument("-ut", "--upper-rgb", action="append", type=int, help="Upper threshold RGB values")
+	parser.add_argument("-i", "--image", help="path to image")
+	parser.add_argument("-ma", "--min-area", type=int, help="minimum area for blobs")
+	parser.add_argument("-lt", "--lower-rgb", action="append", type=int, help="lower threshold for RGB values")
+	parser.add_argument("-ut", "--upper-rgb", action="append", type=int, help="upper threshold RGB values")
 
 	return vars(parser.parse_args())
