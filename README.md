@@ -14,10 +14,10 @@ pip dependencies:
 $ pip install -r requirements.txt
 ```
 
-Then, you can run the program using
+Then, you can run the program using:
 
 ```bash
-$ python app.py
+$ python run.py
 ```
 
 ## Configuration
