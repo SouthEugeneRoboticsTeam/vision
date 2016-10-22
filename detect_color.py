@@ -8,8 +8,8 @@ args = utils.get_args()
 camera = cv2.VideoCapture(0)
 
 # Make the thresholds numpy arrays
-lower = np.array(args["lowrgb"], dtype="uint8")
-upper = np.array(args["uprgb"], dtype="uint8")
+lower = np.array(args["lower_rgb"], dtype="uint8")
+upper = np.array(args["upper_rgb"], dtype="uint8")
 
 while(True):
 	# Read image from file
@@ -35,7 +35,7 @@ while(True):
 			# Get area of largest blob
 			largest_area = w * h
 
-			if largest_area > args["minarea"]:
+			if largest_area > args["min_area"]:
 				# Draw rectangle around goal
 				cv2.rectangle(im_rect, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
