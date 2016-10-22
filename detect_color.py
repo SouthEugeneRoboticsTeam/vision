@@ -5,16 +5,28 @@ import cv2
 # Define arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", help="path to image")
-ap.add_argument("-v", "--video", help="path to video")
+ap.add_argument("-ma", "--minarea", help="minimum area for blobs")
+ap.add_argument("-lt", "--lowrgb", nargs='+', help="lower threshold for rgb vals")
+ap.add_argument("-ut", "--uprgb", nargs='+', help="upper threshold rgb vals")
 args = vars(ap.parse_args())
 
-camera = cv2.VideoCapture(0)
+if args["minarea"] is not None:
+    area_threshold = args["minarea"]
+else:
+    area_threshold = 1000
 
 # Define lower and upper thresholds (RGB)
-#lower = [65, 215, 5]
-#upper = [125, 255, 75]
-lower = [65, 75, 0]
-upper = [125, 255, 75]
+if args["lowrgb"] is not None:
+    lower = args["lowrgb"]
+else:
+    lower = [0, 20, 0]
+
+if args["uprgb"] is not None:
+    upper = args["uprgb"]
+else:
+    upper = [30, 255, 30]
+
+camera = cv2.VideoCapture(0)
 
 # Make the thresholds numpy arrays
 lower = np.array(lower, dtype="uint8")
@@ -43,7 +55,7 @@ while(True):
 		    areas.append(cv2.contourArea(c))
 
 		# Sort array of areas by size
-		sorted_areas = sorted(zip(areas, contours), key = lambda x: x[0], reverse=True)
+		sorted_areas = sorted(zip(areas, contours), key=lambda x: x[0], reverse=True)
 
 		if sorted_areas:
 			# Find nth largest using data[n-1][1]
@@ -52,33 +64,31 @@ while(True):
 			# Get x, y, width, height of goal
 			x, y, w, h = cv2.boundingRect(largest)
 
-			# Draw corners of goal
-			#cv2.drawContours(im_rect, largest, -1, (255, 0, 0), 2)
+			largest_area = w * h
 
-			# Draw rectangle around goal
-			cv2.rectangle(im_rect, (x, y), (x + w, y + h), (255, 0, 0), 2)
+			if largest_area > area_threshold:
+				# Draw rectangle around goal
+				cv2.rectangle(im_rect, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
-			# Find center of goal
-			center_x = int(0.5 * (x + (x + w)))
-			center_y = int(0.5 * (y + (y + h)))
+				# Find center of goal
+				center_x = int(0.5 * (x + (x + w)))
+				center_y = int(0.5 * (y + (y + h)))
 
-			# Find pixels away from center
-			offset_x = int(width/2 - center_x) * -1
-			offset_y = int(height/2 - center_y)
+				# Find pixels away from center
+				offset_x = int(width/2 - center_x) * -1
+				offset_y = int(height/2 - center_y)
 
-			# Draw point on center of goal
-			cv2.circle(im_rect, (center_x, center_y), 2, (255, 0, 0), thickness=3)
+				# Draw point on center of goal
+				cv2.circle(im_rect, (center_x, center_y), 2, (255, 0, 0), thickness=3)
 
-			# Draw lines on the screen
-			cv2.line(im_rect, (width/2, 0), (width/2, height), (0, 0, 0), thickness=2)
-			cv2.line(im_rect, (0, height/2), (width, height/2), (0, 0, 0), thickness=2)
+				# Put text on screen
+				font = cv2.FONT_HERSHEY_SIMPLEX
+				offset_string = "(" + str(offset_x) + ", " + str(offset_y) + ")"
+				cv2.putText(im_rect, offset_string, (0, 30), font, 1, (255, 0, 0))
 
-			# Put text on screen
-			font = cv2.FONT_HERSHEY_SIMPLEX
-			offset_string = "(" + str(offset_x) + ", " + str(offset_y) + ")"
-			cv2.putText(im_rect, offset_string, (0, 30), font, 1, (255, 0, 0))
-
-			print (offset_x, offset_y)
+		# Draw crosshair on the screen
+		cv2.line(im_rect, (width/2, 0), (width/2, height), (0, 0, 0), thickness=2)
+		cv2.line(im_rect, (0, height/2), (width, height/2), (0, 0, 0), thickness=2)
 
 		# Show the images
 		cv2.imshow("Original", im_rect)
