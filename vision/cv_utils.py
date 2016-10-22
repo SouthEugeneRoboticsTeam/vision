@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import cv2
 
 def get_largest(im):
