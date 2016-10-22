@@ -5,71 +5,83 @@ import cv2
 # Define arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", help="path to image")
+ap.add_argument("-v", "--video", help="path to video")
 args = vars(ap.parse_args())
 
-# Read image from file
-im = cv2.imread(args["image"])
-
-# Get image height and width
-height, width = im.shape[:2]
+camera = cv2.VideoCapture(0)
 
 # Define lower and upper thresholds (RGB)
-lower = [65, 215, 5]
+#lower = [65, 215, 5]
+#upper = [125, 255, 75]
+lower = [65, 75, 0]
 upper = [125, 255, 75]
 
 # Make the thresholds numpy arrays
 lower = np.array(lower, dtype="uint8")
 upper = np.array(upper, dtype="uint8")
 
-# Create before image
-im_rect = im.copy()
+while(True):
+	# Read image from file
+	(grabbed, im) = camera.read()
 
-# Create mask
-im_mask = cv2.inRange(im, lower, upper)
+	# Get image height and width
+	height, width = im.shape[:2]
 
-# Find contours of the shape
-contours, _ = cv2.findContours(im_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+	# Create before image
+	im_rect = im.copy()
 
-# Cycle through contours and add area to array
-areas = []
-for c in contours:
-    areas.append(cv2.contourArea(c))
+	# Create mask
+	im_mask = cv2.inRange(im, lower, upper)
 
-# Sort array of areas by size
-sorted_areas = sorted(zip(areas, contours), key=lambda x: x[0], reverse=True)
+	# Find contours of the shape
+	contours, _ = cv2.findContours(im_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-# Find nth largest using data[n-1][1]
-largest = sorted_areas[0][1]
+	# Cycle through contours and add area to array
+	areas = []
+	for c in contours:
+	    areas.append(cv2.contourArea(c))
 
-# Get x, y, width, height of goal
-x, y, w, h = cv2.boundingRect(largest)
+	# Sort array of areas by size
+	sorted_areas = sorted(zip(areas, contours), key = lambda x: x[0], reverse=True)
 
-# Draw rectangle around goal
-cv2.rectangle(im_rect, (x, y), (x + w, y + h), (255, 0, 0), 2)
+	if sorted_areas:
+		# Find nth largest using data[n-1][1]
+		largest = sorted_areas[0][1]
 
-# Find center of goal
-center_x = int(0.5 * (x + (x + w)))
-center_y = int(0.5 * (y + (y + h)))
+		# Get x, y, width, height of goal
+		x, y, w, h = cv2.boundingRect(largest)
 
-# Find pixels away from center
-offset_x = int(width/2 - center_x) * -1
-offset_y = int(height/2 - center_y)
+		# Draw corners of goal
+		#cv2.drawContours(im_rect, largest, -1, (255, 0, 0), 2)
 
-# Draw point on center of goal
-cv2.circle(im_rect, (center_x, center_y), 2, (255, 0, 0), thickness=3)
+		# Draw rectangle around goal
+		cv2.rectangle(im_rect, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
-# Draw lines on the screen
-cv2.line(im_rect, (width/2, 0), (width/2, height), (0, 0, 0), thickness=2)
-cv2.line(im_rect, (0, height/2), (width, height/2), (0, 0, 0), thickness=2)
+		# Find center of goal
+		center_x = int(0.5 * (x + (x + w)))
+		center_y = int(0.5 * (y + (y + h)))
 
-# Put text on screen
-font = cv2.FONT_HERSHEY_SIMPLEX
-offset_string = "(" + str(offset_x) + ", " + str(offset_y) + ")"
-cv2.putText(im_rect, offset_string, (0, 30), font, 1, (255, 0, 0))
+		# Find pixels away from center
+		offset_x = int(width/2 - center_x) * -1
+		offset_y = int(height/2 - center_y)
 
-print (offset_x, offset_y)
+		# Draw point on center of goal
+		cv2.circle(im_rect, (center_x, center_y), 2, (255, 0, 0), thickness=3)
 
-# Show the images
-cv2.imshow("Original", im_rect)
-cv2.imshow("Mask", im_mask)
-cv2.waitKey(0)
+		# Draw lines on the screen
+		cv2.line(im_rect, (width/2, 0), (width/2, height), (0, 0, 0), thickness=2)
+		cv2.line(im_rect, (0, height/2), (width, height/2), (0, 0, 0), thickness=2)
+
+		# Put text on screen
+		font = cv2.FONT_HERSHEY_SIMPLEX
+		offset_string = "(" + str(offset_x) + ", " + str(offset_y) + ")"
+		cv2.putText(im_rect, offset_string, (0, 30), font, 1, (255, 0, 0))
+
+		print (offset_x, offset_y)
+
+	# Show the images
+	cv2.imshow("Original", im_rect)
+	cv2.imshow("Mask", im_mask)
+
+	if cv2.waitKey(1) & 0xFF == ord('q'):
+			break
