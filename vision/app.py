@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
 import numpy as np
-import utils
-import cv_utils
+import vision.utils as utils
+import vision.cv_utils as cv_utils
 import cv2
 
 class Vision:
