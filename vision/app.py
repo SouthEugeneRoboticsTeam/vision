@@ -29,8 +29,7 @@ class Vision:
 	def run_image(self):
 		if self.verbose:
 			print("Image path specified, reading from %s" % self.image)
-			print("")
-		
+
 		im = cv2.imread(self.image)
 
 		im_rect, im_mask = cv_utils.draw_images(im, self.lower, self.upper, self.min_area, self.verbose)
@@ -48,8 +47,7 @@ class Vision:
 		camera = cv2.VideoCapture(0)
 
 		if self.verbose:
-			print("No image path specified, reading from camera video feed.")
-			print("")
+			print("No image path specified, reading from camera video feed")
 
 		timeout = 0
 
@@ -70,11 +68,12 @@ class Vision:
 						break
 			else:
 				if (timeout == 0):
-					print("No camera detected immediately.")
+					print("No camera detected")
+
 				timeout += 1
 
 				if (timeout > 500):
-					print("Camera search timed out.")
+					print("Camera search timed out")
 					break
 
 		camera.release()
