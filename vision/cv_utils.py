@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
 import cv2
-import utils
 
-args = utils.get_args()
+from . import args
 
 verbose = args["verbose"]
 

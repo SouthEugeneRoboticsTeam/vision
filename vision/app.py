@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
 import numpy as np
-import vision.utils as utils
 import vision.cv_utils as cv_utils
 import cv2
 
+from . import args
+
 class Vision:
 	def __init__(self):
-		self.args = utils.get_args()
+		self.args = args
 
 		self.lower = np.array(self.args["lower_rgb"], dtype="uint8")
 		self.upper = np.array(self.args["upper_rgb"], dtype="uint8")
