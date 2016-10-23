@@ -51,6 +51,8 @@ class Vision:
 			print("No image path specified, reading from camera video feed.")
 			print("")
 
+		timeout = 0
+
 		while(True):
 			# Read image from file
 			(ret, im) = camera.read()
@@ -67,10 +69,13 @@ class Vision:
 					if cv2.waitKey(1) & 0xFF == ord('q'):
 						break
 			else:
-				if self.verbose:
-					print("No camera detected, ret = %s" % ret)
+				if (timeout == 0):
+					print("No camera detected immediately.")
+				timeout += 1
 
-				break
+				if (timeout > 500):
+					print("Camera search timed out.")
+					break
 
 		camera.release()
 		cv2.destroyAllWindows()
