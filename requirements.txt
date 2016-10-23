@@ -1,1 +1,2 @@
 configargparse==0.11.0
+pynetworktables==2015.3.4
