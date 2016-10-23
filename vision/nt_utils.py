@@ -16,6 +16,7 @@ if ip is not None:
 
 	vision_table = NetworkTable.getTable("vision")
 
+
 def put_number(key, value):
 	if vision_table:
 		vision_table.putNumber(key, value)

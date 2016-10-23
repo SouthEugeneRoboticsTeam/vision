@@ -7,6 +7,7 @@ import cv2
 
 from . import args
 
+
 class Vision:
 	def __init__(self):
 		self.args = args

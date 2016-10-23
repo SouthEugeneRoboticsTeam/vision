@@ -6,6 +6,7 @@ from . import args
 
 verbose = args["verbose"]
 
+
 def process_image(im, lower, upper, min_area):
 	# Get image height and width
 	height, width = im.shape[:2]
@@ -41,8 +42,8 @@ def process_image(im, lower, upper, min_area):
 				print("[Blob] center: (%d, %d)" % (center_x, center_y))
 
 			# Find pixels away from center
-			offset_x = int(width/2 - center_x) * -1
-			offset_y = int(height/2 - center_y)
+			offset_x = int(width / 2 - center_x) * -1
+			offset_y = int(height / 2 - center_y)
 
 			if verbose:
 				print("[Blob] offset: (%d, %d)" % (offset_x, offset_y))
@@ -51,6 +52,7 @@ def process_image(im, lower, upper, min_area):
 			print("No largest blob was found")
 
 	return offset_x, offset_y
+
 
 def draw_images(im, lower, upper, min_area):
 	# Get image height and width
@@ -90,8 +92,8 @@ def draw_images(im, lower, upper, min_area):
 				print("[Blob] center: (%d, %d)" % (center_x, center_y))
 
 			# Find pixels away from center
-			offset_x = int(width/2 - center_x) * -1
-			offset_y = int(height/2 - center_y)
+			offset_x = int(width / 2 - center_x) * -1
+			offset_y = int(height / 2 - center_y)
 
 			if verbose:
 				print("[Blob] offset: (%d, %d)" % (offset_x, offset_y))
@@ -109,6 +111,7 @@ def draw_images(im, lower, upper, min_area):
 	draw_crosshair(im_rect, width, height, (0, 0, 0), 2)
 
 	return im_rect, im_mask
+
 
 def get_largest(im):
 	# Find contours of the shape
@@ -128,9 +131,11 @@ def get_largest(im):
 	else:
 		return False
 
+
 def draw_crosshair(im, width, height, color, thickness):
-	cv2.line(im, (width/2, 0), (width/2, height), color, thickness=thickness)
-	cv2.line(im, (0, height/2), (width, height/2), color, thickness=thickness)
+	cv2.line(im, (width / 2, 0), (width / 2, height), color, thickness=thickness)
+	cv2.line(im, (0, height / 2), (width, height / 2), color, thickness=thickness)
+
 
 def draw_offset(im, offset_x, offset_y, point, size, color):
 	font = cv2.FONT_HERSHEY_SIMPLEX
