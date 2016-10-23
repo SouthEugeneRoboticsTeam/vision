@@ -14,7 +14,7 @@ def process_image(im, lower, upper, min_area):
 		print("[Image] width: %d, height: %d" % (width, height))
 
 	# Create mask
-	im_mask = cv2.inRange(im, self.lower, self.upper)
+	im_mask = cv2.inRange(im, lower, upper)
 
 	# Get largest blob
 	largest = get_largest(im_mask)
@@ -30,7 +30,7 @@ def process_image(im, lower, upper, min_area):
 		largest_area = w * h
 
 		if verbose:
-			print("[Blob] x: %d, y: %d, width: %d, height: %d, area: %d" % (x, y, w, h, largest))
+			print("[Blob] x: %d, y: %d, width: %d, height: %d, area: %d" % (x, y, w, h, largest_area))
 
 		if largest_area > min_area:
 			# Find center of goal
