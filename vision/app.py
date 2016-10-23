@@ -14,6 +14,8 @@ class Vision:
 
 		self.image = self.args["image"]
 
+		self.display = self.args["display"]
+
 	def run(self):
 		if self.image is not None:
 			self.run_image()
@@ -25,13 +27,14 @@ class Vision:
 
 		im_rect, im_mask = self.draw_images(im)
 
-		# Show the images
-		cv2.imshow("Original", im_rect)
-		cv2.imshow("Mask", im_mask)
+		if self.display:
+			# Show the images
+			cv2.imshow("Original", im_rect)
+			cv2.imshow("Mask", im_mask)
 
-		cv2.waitKey(0)
+			cv2.waitKey(0)
 
-		cv2.destroyAllWindows()
+			cv2.destroyAllWindows()
 
 	def run_video(self):
 		camera = cv2.VideoCapture(0)
@@ -44,12 +47,13 @@ class Vision:
 				# check if they wanted to draw images or not
 				im_rect, im_mask = self.draw_images(im)
 
-				# Show the images
-				cv2.imshow("Original", im_rect)
-				cv2.imshow("Mask", im_mask)
+				if self.display:
+					# Show the images
+					cv2.imshow("Original", im_rect)
+					cv2.imshow("Mask", im_mask)
 
-				if cv2.waitKey(1) & 0xFF == ord('q'):
-					break
+					if cv2.waitKey(1) & 0xFF == ord('q'):
+						break
 			else:
 				break
 

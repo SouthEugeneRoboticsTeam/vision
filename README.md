@@ -32,8 +32,9 @@ argument may be edited using the `lower-rgb` line in the `config.ini`.
 					  path to image [env var: VISION_IMAGE]
 -ma MIN_AREA, --min-area MIN_AREA
 					  minimum area for blobs [env var: VISION_MIN_AREA]
--lt LOWER_RGB, --lower-rgb LOWER_RGB
+-lt LOWER_RGB [LOWER_RGB ...], --lower-rgb LOWER_RGB [LOWER_RGB ...]
 					  lower threshold for RGB values [env var: VISION_LOWER_RGB]
--ut UPPER_RGB, --upper-rgb UPPER_RGB
+-ut UPPER_RGB [UPPER_RGB ...], --upper-rgb UPPER_RGB [UPPER_RGB ...]
 					  upper threshold RGB values [env var: VISION_UPPER_RGB]
+-d, --display         display results of processing in a new window [env var: VISION_DISPLAY]
 ```

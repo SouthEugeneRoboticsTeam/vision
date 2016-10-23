@@ -16,5 +16,6 @@ def get_args():
 	parser.add_argument("-ma", "--min-area", type=int, help="minimum area for blobs")
 	parser.add_argument("-lt", "--lower-rgb", action="append", nargs="+", type=int, help="lower threshold for RGB values")
 	parser.add_argument("-ut", "--upper-rgb", action="append", nargs="+", type=int, help="upper threshold RGB values")
+	parser.add_argument("-d", "--display", action="store_true", help="display results of processing in a new window")
 
 	return vars(parser.parse_args())
