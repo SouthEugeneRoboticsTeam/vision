@@ -33,9 +33,12 @@ def process_image(im, lower, upper, min_area):
 
 	return offset_x, offset_y
 
-def draw_images(im, lower, upper, min_area):
+def draw_images(im, lower, upper, min_area, verbose):
 	# Get image height and width
 	height, width = im.shape[:2]
+
+	if verbose:
+		print("[Image] width: %d  height: %d" % (width, height))
 
 	# Create before image
 	im_rect = im.copy()
@@ -53,6 +56,9 @@ def draw_images(im, lower, upper, min_area):
 		# Get area of largest blob
 		largest_area = w * h
 
+		if verbose:
+			print("[Blob] x: %d, y: %d, width: %d, height: %d, area: %d" % (x, y, w, h, largest_area))
+
 		if largest_area > min_area:
 			# Draw rectangle around goal
 			cv2.rectangle(im_rect, (x, y), (x + w, y + h), (255, 0, 0), 2)
@@ -60,6 +66,9 @@ def draw_images(im, lower, upper, min_area):
 			# Find center of goal
 			center_x = int(0.5 * (x + (x + w)))
 			center_y = int(0.5 * (y + (y + h)))
+
+			if verbose:
+				print("[Blob] center: (%d,%d)" % (center_x, center_y))
 
 			# Find pixels away from center
 			offset_x = int(width/2 - center_x) * -1
@@ -71,8 +80,15 @@ def draw_images(im, lower, upper, min_area):
 			# Put text on screen
 			draw_offset(im_rect, offset_x, offset_y, (0, 30), 1, (255, 0, 0))
 
+	else:
+		if verbose:
+			print("No largest blob was found")
+
 	# Draw crosshair on the screen
 	draw_crosshair(im_rect, width, height, (0, 0, 0), 2)
+
+	if verbose:
+		print("")
 
 	return im_rect, im_mask
 
@@ -93,7 +109,7 @@ def get_largest(im):
 		return sorted_areas[0][1]
 	else:
 		return False
-
+	
 def draw_crosshair(im, width, height, color, thickness):
 	cv2.line(im, (width/2, 0), (width/2, height), color, thickness=thickness)
 	cv2.line(im, (0, height/2), (width, height/2), color, thickness=thickness)

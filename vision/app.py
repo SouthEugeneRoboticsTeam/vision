@@ -18,6 +18,8 @@ class Vision:
 
 		self.display = self.args["display"]
 
+		self.verbose = self.args["verbose"]
+
 	def run(self):
 		if self.image is not None:
 			self.run_image()
@@ -25,9 +27,13 @@ class Vision:
 			self.run_video()
 
 	def run_image(self):
+		if self.verbose:
+			print("Image path specified, reading from %s" % self.image)
+			print("")
+		
 		im = cv2.imread(self.image)
 
-		im_rect, im_mask = cv_utils.draw_images(im, self.lower, self.upper, self.min_area)
+		im_rect, im_mask = cv_utils.draw_images(im, self.lower, self.upper, self.min_area, self.verbose)
 
 		if self.display:
 			# Show the images
@@ -41,13 +47,17 @@ class Vision:
 	def run_video(self):
 		camera = cv2.VideoCapture(0)
 
+		if self.verbose:
+			print("No image path specified, reading from camera video feed.")
+			print("")
+
 		while(True):
 			# Read image from file
 			(ret, im) = camera.read()
 
 			if ret:
 				# check if they wanted to draw images or not
-				im_rect, im_mask = cv_utils.draw_images(im, self.lower, self.upper, self.min_area)
+				im_rect, im_mask = cv_utils.draw_images(im, self.lower, self.upper, self.min_area, self.verbose)
 
 				if self.display:
 					# Show the images
@@ -57,6 +67,9 @@ class Vision:
 					if cv2.waitKey(1) & 0xFF == ord('q'):
 						break
 			else:
+				if self.verbose:
+					print("No camera detected, ret = %s" % ret)
+
 				break
 
 		camera.release()
