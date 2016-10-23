@@ -62,6 +62,10 @@ class Vision:
 
 			if ret:
 				im_rect, im_mask = cv_utils.draw_images(im, self.lower, self.upper, self.min_area)
+				offset_x, offset_y = cv_utils.process_image(im, self.lower, self.upper, self.min_area)
+
+				nt_utils.put_number("offset_x", offset_x)
+				nt_utils.put_number("offset_y", offset_y)
 
 				if self.display:
 					# Show the images
