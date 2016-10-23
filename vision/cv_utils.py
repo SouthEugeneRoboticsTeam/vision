@@ -2,6 +2,80 @@
 
 import cv2
 
+def process_image(im, lower, upper, min_area):
+	# Get image height and width
+	height, width = im.shape[:2]
+
+	# Create mask
+	im_mask = cv2.inRange(im, self.lower, self.upper)
+
+	# Get largest blob
+	largest = get_largest(im_mask)
+
+	offset_x = 0
+	offset_y = 0
+
+	if largest is not False:
+		# Get x, y, width, height of goal
+		x, y, w, h = cv2.boundingRect(largest)
+
+		# Get area of largest blob
+		largest_area = w * h
+
+		if largest_area > min_area:
+			# Find center of goal
+			center_x = int(0.5 * (x + (x + w)))
+			center_y = int(0.5 * (y + (y + h)))
+
+			# Find pixels away from center
+			offset_x = int(width/2 - center_x) * -1
+			offset_y = int(height/2 - center_y)
+
+	return offset_x, offset_y
+
+def draw_images(im, lower, upper, min_area):
+	# Get image height and width
+	height, width = im.shape[:2]
+
+	# Create before image
+	im_rect = im.copy()
+
+	# Create mask
+	im_mask = cv2.inRange(im, lower, upper)
+
+	# Get largest blob
+	largest = get_largest(im_mask)
+
+	if largest is not False:
+		# Get x, y, width, height of goal
+		x, y, w, h = cv2.boundingRect(largest)
+
+		# Get area of largest blob
+		largest_area = w * h
+
+		if largest_area > min_area:
+			# Draw rectangle around goal
+			cv2.rectangle(im_rect, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+			# Find center of goal
+			center_x = int(0.5 * (x + (x + w)))
+			center_y = int(0.5 * (y + (y + h)))
+
+			# Find pixels away from center
+			offset_x = int(width/2 - center_x) * -1
+			offset_y = int(height/2 - center_y)
+
+			# Draw point on center of goal
+			cv2.circle(im_rect, (center_x, center_y), 2, (255, 0, 0), thickness=3)
+
+			# Put text on screen
+			draw_offset(im_rect, offset_x, offset_y, (0, 30), 1, (255, 0, 0))
+
+	# Draw crosshair on the screen
+	draw_crosshair(im_rect, width, height, (0, 0, 0), 2)
+
+	return im_rect, im_mask
+
 def get_largest(im):
 	# Find contours of the shape
 	contours, _ = cv2.findContours(im.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
