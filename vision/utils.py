@@ -14,7 +14,7 @@ def get_args():
 
 	parser.add_argument("-i", "--image", help="path to image")
 	parser.add_argument("-ma", "--min-area", type=int, help="minimum area for blobs")
-	parser.add_argument("-lt", "--lower-rgb", action="append", type=int, help="lower threshold for RGB values")
-	parser.add_argument("-ut", "--upper-rgb", action="append", type=int, help="upper threshold RGB values")
+	parser.add_argument("-lt", "--lower-rgb", action="append", nargs="+", type=int, help="lower threshold for RGB values")
+	parser.add_argument("-ut", "--upper-rgb", action="append", nargs="+", type=int, help="upper threshold RGB values")
 
 	return vars(parser.parse_args())
