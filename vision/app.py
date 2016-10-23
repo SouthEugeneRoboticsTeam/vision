@@ -20,6 +20,9 @@ class Vision:
 
 		self.verbose = self.args["verbose"]
 
+		if self.verbose:
+			print(self.args)
+
 	def run(self):
 		if self.image is not None:
 			self.run_image()
@@ -32,7 +35,7 @@ class Vision:
 
 		im = cv2.imread(self.image)
 
-		im_rect, im_mask = cv_utils.draw_images(im, self.lower, self.upper, self.min_area, self.verbose)
+		im_rect, im_mask = cv_utils.draw_images(im, self.lower, self.upper, self.min_area)
 
 		if self.display:
 			# Show the images
@@ -56,8 +59,7 @@ class Vision:
 			(ret, im) = camera.read()
 
 			if ret:
-				# check if they wanted to draw images or not
-				im_rect, im_mask = cv_utils.draw_images(im, self.lower, self.upper, self.min_area, self.verbose)
+				im_rect, im_mask = cv_utils.draw_images(im, self.lower, self.upper, self.min_area)
 
 				if self.display:
 					# Show the images

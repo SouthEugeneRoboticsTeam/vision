@@ -1,10 +1,18 @@
 #!/usr/bin/python
 
 import cv2
+import utils
+
+args = utils.get_args()
+
+verbose = args["verbose"]
 
 def process_image(im, lower, upper, min_area):
 	# Get image height and width
 	height, width = im.shape[:2]
+
+	if verbose:
+		print("[Image] width: %d, height: %d" % (width, height))
 
 	# Create mask
 	im_mask = cv2.inRange(im, self.lower, self.upper)
@@ -22,18 +30,30 @@ def process_image(im, lower, upper, min_area):
 		# Get area of largest blob
 		largest_area = w * h
 
+		if verbose:
+			print("[Blob] x: %d, y: %d, width: %d, height: %d, area: %d" % (x, y, w, h, largest))
+
 		if largest_area > min_area:
 			# Find center of goal
 			center_x = int(0.5 * (x + (x + w)))
 			center_y = int(0.5 * (y + (y + h)))
 
+			if verbose:
+				print("[Blob] center: (%d, %d)" % (center_x, center_y))
+
 			# Find pixels away from center
 			offset_x = int(width/2 - center_x) * -1
 			offset_y = int(height/2 - center_y)
 
+			if verbose:
+				print("[Blob] offset: (%d, %d)" % (offset_x, offset_y))
+	else:
+		if verbose:
+			print("No largest blob was found")
+
 	return offset_x, offset_y
 
-def draw_images(im, lower, upper, min_area, verbose):
+def draw_images(im, lower, upper, min_area):
 	# Get image height and width
 	height, width = im.shape[:2]
 
@@ -73,6 +93,9 @@ def draw_images(im, lower, upper, min_area, verbose):
 			# Find pixels away from center
 			offset_x = int(width/2 - center_x) * -1
 			offset_y = int(height/2 - center_y)
+
+			if verbose:
+				print("[Blob] offset: (%d, %d)" % (offset_x, offset_y))
 
 			# Draw point on center of goal
 			cv2.circle(im_rect, (center_x, center_y), 2, (255, 0, 0), thickness=3)
