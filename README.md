@@ -1,7 +1,7 @@
 # SERT Vision
 
-![Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg)
-![License](https://img.shields.io/github/license/andrewda/robotics-vision.svg)
+![Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg?style=flat-square)
+![License](https://img.shields.io/github/license/andrewda/robotics-vision.svg?style=flat-square)
 
 SERT's OpenCV vision code.
 
