@@ -37,4 +37,7 @@ argument may be edited using the `lower-rgb` line in the `config.ini`.
 -ut UPPER_RGB [UPPER_RGB ...], --upper-rgb UPPER_RGB [UPPER_RGB ...]
 					  upper threshold RGB values [env var: VISION_UPPER_RGB]
 -d, --display         display results of processing in a new window [env var: VISION_DISPLAY]
+-v, --verbose         for debugging, prints useful values [env var: VISION_VERBOSE]
+-ip ROBORIO_IP, --roborio-ip ROBORIO_IP
+					  the ip address of the roboRIO [env var: VISION_ROBORIO_IP]
 ```
