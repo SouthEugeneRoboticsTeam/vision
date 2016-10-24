@@ -1,5 +1,6 @@
 # SERT Vision
 
+![Team 2521](https://img.shields.io/badge/team-2521-7d26cd.svg?style=flat-square)
 ![Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg?style=flat-square)
 ![License](https://img.shields.io/github/license/andrewda/robotics-vision.svg?style=flat-square)
 
