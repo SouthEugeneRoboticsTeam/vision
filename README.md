@@ -1,9 +1,9 @@
 # SERT Vision
 
-[![Team 2521](https://img.shields.io/badge/team-2521-7d26cd.svg?style=flat-square)](https://sert2521.org)
-[![Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg?style=flat-square)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/github/license/andrewda/robotics-vision.svg?style=flat-square)](https://github.com/andrewda/robotics-vision/blob/master/LICENSE)
-[![Travis](https://img.shields.io/travis/andrewda/robotics-vision.svg?style=flat-square)](https://travis-ci.org/andrewda/robotics-vision)
+[![Team 2521][team-img]][team-url]
+[![Python 2.7][python-img]][python-url]
+[![License][license-img]][license-url]
+[![Travis][travis-img]][travis-url]
 
 SERT's OpenCV vision code.
 
@@ -43,3 +43,14 @@ argument may be edited using the `lower-rgb` line in the `config.ini`.
 -ip ROBORIO_IP, --roborio-ip ROBORIO_IP
 					  the ip address of the roboRIO [env var: VISION_ROBORIO_IP]
 ```
+
+<!-- Badge URLs -->
+
+[team-img]:     https://img.shields.io/badge/team-2521-7d26cd.svg?style=flat-square
+[team-url]:     https://sert2521.org
+[python-img]:   https://img.shields.io/badge/python-2.7-blue.svg?style=flat-square
+[python-url]:   https://www.python.org/downloads
+[license-img]:  https://img.shields.io/github/license/andrewda/robotics-vision.svg?style=flat-square
+[license-url]:  https://github.com/andrewda/robotics-vision/blob/master/LICENSE
+[travis-img]:   https://img.shields.io/travis/andrewda/robotics-vision.svg?style=flat-square
+[travis-url]:   https://travis-ci.org/andrewda/robotics-vision
