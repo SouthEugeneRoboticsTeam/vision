@@ -1,8 +1,9 @@
 # SERT Vision
 
-![Team 2521](https://img.shields.io/badge/team-2521-7d26cd.svg?style=flat-square)
-![Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg?style=flat-square)
-![License](https://img.shields.io/github/license/andrewda/robotics-vision.svg?style=flat-square)
+[![Team 2521](https://img.shields.io/badge/team-2521-7d26cd.svg?style=flat-square)](https://sert2521.org)
+[![Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg?style=flat-square)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/github/license/andrewda/robotics-vision.svg?style=flat-square)](https://github.com/andrewda/robotics-vision/blob/master/LICENSE)
+[![Travis](https://img.shields.io/travis/andrewda/robotics-vision.svg?style=flat-square)](https://travis-ci.org/andrewda/robotics-vision)
 
 SERT's OpenCV vision code.
 
