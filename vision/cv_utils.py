@@ -100,8 +100,6 @@ def draw_images(im, lower, upper, min_area):
 			center_x = int(0.5 * (x + (x + w)))
 			center_y = int(0.5 * (y + (y + h)))
 
-			center_y -= h / 14
-
 			if verbose:
 				print("[Blob] center: (%d, %d)" % (center_x, center_y))
 
