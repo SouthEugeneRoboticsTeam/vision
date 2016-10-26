@@ -12,8 +12,8 @@ class Vision:
 	def __init__(self):
 		self.args = args
 
-		self.lower = np.array(self.args["lower_rgb"], dtype="uint8")
-		self.upper = np.array(self.args["upper_rgb"], dtype="uint8")
+		self.lower = np.array(self.args["lower_color"], dtype="uint8")
+		self.upper = np.array(self.args["upper_color"], dtype="uint8")
 
 		self.min_area = int(self.args["min_area"])
 
