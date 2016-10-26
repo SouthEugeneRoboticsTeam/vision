@@ -71,18 +71,18 @@ def draw_images(im, lower, upper, min_area):
 	# Get largest blob
 	largest = get_largest(green_mask)
 
-	# Create mask of convex hull of green
-	hull = cv2.convexHull(largest)
-	contours = [hull]  # Draw contours requires an array
-	hull_mask = np.zeros(green_mask.shape, np.uint8)
-	# -1 thickness means fill
-	cv2.drawContours(hull_mask, contours, 0, color=255, thickness=-1)
-
-	# Create mask of exclusion of hull and green mask
-	ex_mask = cv2.bitwise_and(cv2.bitwise_not(green_mask), hull_mask)
-	blob = get_largest(ex_mask)  # Removes left over edge pieces
-
 	if largest is not False:
+		# Create mask of convex hull of green
+		hull = cv2.convexHull(largest)
+		contours = [hull]  # Draw contours requires an array
+		hull_mask = np.zeros(green_mask.shape, np.uint8)
+		# -1 thickness means fill
+		cv2.drawContours(hull_mask, contours, 0, color=255, thickness=-1)
+
+		# Create mask of exclusion of hull and green mask
+		ex_mask = cv2.bitwise_and(cv2.bitwise_not(green_mask), hull_mask)
+		blob = get_largest(ex_mask)  # Removes left over edge pieces
+
 		# Get x, y, width, height of goal
 		x, y, w, h = cv2.boundingRect(blob)
 
@@ -120,6 +120,7 @@ def draw_images(im, lower, upper, min_area):
 	else:
 		if verbose:
 			print("No largest blob was found")
+		ex_mask = green_mask  # Required for proper return values
 
 	# Draw crosshair on the screen
 	draw_crosshair(im_rect, width, height, (0, 0, 0), 2)
