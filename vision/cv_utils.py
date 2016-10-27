@@ -128,7 +128,10 @@ def draw_images(im, lower, upper, min_area):
 
 def get_largest(im):
 	# Find contours of the shape
-	contours, _ = cv2.findContours(im.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+	if (cv2.__version__ == '3.1.0-dev') or (cv2.__version__ == '3.1.0') or (cv2.__version__ == '3.0.0-dev') or (cv2.__version__ == '3.0.0'):
+		_, contours, _ = cv2.findContours(im.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+	else:
+		contours, _ = cv2.findContours(im.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
 	# Cycle through contours and add area to array
 	areas = []
