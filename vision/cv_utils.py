@@ -8,54 +8,36 @@ from . import args
 verbose = args["verbose"]
 
 
-def process_image(im, lower, upper, min_area):
+def process_image(im, x, y, w, h):
 	# Get image height and width
 	height, width = im.shape[:2]
 
 	if verbose:
 		print("[Image] width: %d, height: %d" % (width, height))
 
-	# Create mask
-	im_mask = cv2.inRange(im, lower, upper)
-
-	# Get largest blob
-	largest = get_largest(im_mask)
-
 	offset_x = 0
 	offset_y = 0
 
-	if largest is not False:
-		# Get x, y, width, height of goal
-		x, y, w, h = cv2.boundingRect(largest)
+	# Find center of goal
+	center_x = int(0.5 * (x + (x + w)))
+	center_y = int(0.5 * (y + (y + h)))
 
-		# Get area of largest blob
-		largest_area = w * h
+	if verbose:
+		print("[Blob] center: (%d, %d)" % (center_x, center_y))
 
-		if verbose:
-			print("[Blob] x: %d, y: %d, width: %d, height: %d, area: %d" % (x, y, w, h, largest_area))
+	# Find pixels away from center
+	offset_x = int(width / 2 - center_x) * -1
+	offset_y = int(height / 2 - center_y)
 
-		if largest_area > min_area:
-			# Find center of goal
-			center_x = int(0.5 * (x + (x + w)))
-			center_y = int(0.5 * (y + (y + h)))
-
-			if verbose:
-				print("[Blob] center: (%d, %d)" % (center_x, center_y))
-
-			# Find pixels away from center
-			offset_x = int(width / 2 - center_x) * -1
-			offset_y = int(height / 2 - center_y)
-
-			if verbose:
-				print("[Blob] offset: (%d, %d)" % (offset_x, offset_y))
-	else:
-		if verbose:
-			print("No largest blob was found")
+	if verbose:
+		print("[Blob] offset: (%d, %d)" % (offset_x, offset_y))
 
 	return offset_x, offset_y
 
 
-def draw_images(im, lower, upper, min_area):
+def draw_images(im, x, y, w, h):
+	# Parameters are image and blob dimensions
+
 	# Get image height and width
 	height, width = im.shape[:2]
 
@@ -65,8 +47,44 @@ def draw_images(im, lower, upper, min_area):
 	# Create before image
 	im_rect = im.copy()
 
+	# Draw rectangle around goal
+	cv2.rectangle(im_rect, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+	# Find center of goal
+	center_x = int(0.5 * (x + (x + w)))
+	center_y = int(0.5 * (y + (y + h)))
+
+	if verbose:
+		print("[Blob] center: (%d, %d)" % (center_x, center_y))
+
+	# Find pixels away from center
+	offset_x = int(width / 2 - center_x) * -1
+	offset_y = int(height / 2 - center_y)
+
+	if verbose:
+		print("[Blob] offset: (%d, %d)" % (offset_x, offset_y))
+
+	# Draw point on center of goal
+	cv2.circle(im_rect, (center_x, center_y), 2, (255, 0, 0), thickness=3)
+
+	# Put text on screen
+	draw_offset(im_rect, offset_x, offset_y, (0, 30), 1, (255, 0, 0))
+
+	# Draw crosshair on the screen
+	draw_crosshair(im_rect, width, height, (0, 0, 0), 2)
+
+	return im_rect
+
+
+def get_blob(im, lower, upper):
+	# Finds a blob, if one exists
+
 	# Create mask of green
-	green_mask = cv2.inRange(im, lower, upper)
+	try:
+		green_mask = cv2.inRange(im, lower, upper)
+	except cv2.error:
+		# Catches the case where there is no blob in range
+		return None, None
 
 	# Get largest blob
 	largest = get_largest(green_mask)
@@ -81,49 +99,10 @@ def draw_images(im, lower, upper, min_area):
 
 		# Create mask of exclusion of hull and green mask
 		ex_mask = cv2.bitwise_and(cv2.bitwise_not(green_mask), hull_mask)
-		blob = get_largest(ex_mask)  # Removes left over edge pieces
-
-		# Get x, y, width, height of goal
-		x, y, w, h = cv2.boundingRect(blob)
-
-		# Get area of largest blob
-		largest_area = w * h
-
-		if verbose:
-			print("[Blob] x: %d, y: %d, width: %d, height: %d, area: %d" % (x, y, w, h, largest_area))
-
-		if largest_area > min_area:
-			# Draw rectangle around goal
-			cv2.rectangle(im_rect, (x, y), (x + w, y + h), (255, 0, 0), 2)
-
-			# Find center of goal
-			center_x = int(0.5 * (x + (x + w)))
-			center_y = int(0.5 * (y + (y + h)))
-
-			if verbose:
-				print("[Blob] center: (%d, %d)" % (center_x, center_y))
-
-			# Find pixels away from center
-			offset_x = int(width / 2 - center_x) * -1
-			offset_y = int(height / 2 - center_y)
-
-			if verbose:
-				print("[Blob] offset: (%d, %d)" % (offset_x, offset_y))
-
-			# Draw point on center of goal
-			cv2.circle(im_rect, (center_x, center_y), 2, (255, 0, 0), thickness=3)
-
-			# Put text on screen
-			draw_offset(im_rect, offset_x, offset_y, (0, 30), 1, (255, 0, 0))
+		largest = get_largest(ex_mask)  # Removes left over edge pieces
+		return largest, ex_mask
 	else:
-		if verbose:
-			print("No largest blob was found")
-		ex_mask = green_mask  # Required for proper return values
-
-	# Draw crosshair on the screen
-	draw_crosshair(im_rect, width, height, (0, 0, 0), 2)
-
-	return im_rect, ex_mask
+		return None, None
 
 
 def get_largest(im):

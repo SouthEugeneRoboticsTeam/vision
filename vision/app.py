@@ -7,6 +7,8 @@ import cv2
 
 from . import args
 
+verbose = args["verbose"]
+
 
 class Vision:
 	def __init__(self):
@@ -38,12 +40,28 @@ class Vision:
 
 		im = cv2.imread(self.image)
 
-		im_rect, im_mask = cv_utils.draw_images(im, self.lower, self.upper, self.min_area)
+		blob, im_mask = cv_utils.get_blob(im, self.lower, self.upper)
+		if blob is not None:
+			x, y, w, h = cv2.boundingRect(blob)
+			if w * h > self.min_area:
+				if verbose:
+					print("[Blob] x: %d, y: %d, width: %d, height: %d, area: %d" % (x, y, w, h, w * h))
+				im_rect = cv_utils.draw_images(im, x, y, w, h)
+				offset_x, offset_y = cv_utils.process_image(im, x, y, w, h)
+
+				nt_utils.put_number("offset_x", offset_x)
+				nt_utils.put_number("offset_y", offset_y)
+		else:
+			if verbose:
+				print("No largest blob was found")
 
 		if self.display:
 			# Show the images
-			cv2.imshow("Original", im_rect)
-			cv2.imshow("Mask", im_mask)
+			if blob is not None:
+				cv2.imshow("Original", im_rect)
+				cv2.imshow("Mask", im_mask)
+			else:
+				cv2.imshow("Original", im)
 
 			cv2.waitKey(0)
 
@@ -62,19 +80,32 @@ class Vision:
 			(ret, im) = camera.read()
 
 			if ret:
-				im_rect, im_mask = cv_utils.draw_images(im, self.lower, self.upper, self.min_area)
-				offset_x, offset_y = cv_utils.process_image(im, self.lower, self.upper, self.min_area)
+				blob, im_mask = cv_utils.get_blob(im, self.lower, self.upper)
+				if blob is not None:
+					x, y, w, h = cv2.boundingRect(blob)
+					if w * h > self.min_area:
+						if verbose:
+							print("[Blob] x: %d, y: %d, width: %d, height: %d, area: %d" % (x, y, w, h, w * h))
+						im_rect = cv_utils.draw_images(im, x, y, w, h)
+						offset_x, offset_y = cv_utils.process_image(im, x, y, w, h)
 
-				nt_utils.put_number("offset_x", offset_x)
-				nt_utils.put_number("offset_y", offset_y)
+						nt_utils.put_number("offset_x", offset_x)
+						nt_utils.put_number("offset_y", offset_y)
 
-				if self.display:
-					# Show the images
-					cv2.imshow("Original", im_rect)
-					cv2.imshow("Mask", im_mask)
+						if self.display:
+							# Show the images
+							if blob is not None:
+								cv2.imshow("Original", im_rect)
+								cv2.imshow("Mask", im_mask)
+							else:
+								cv2.imshow("Original", im)
 
-					if cv2.waitKey(1) & 0xFF == ord('q'):
-						break
+							cv2.waitKey(0)
+
+							cv2.destroyAllWindows()
+				else:
+					if verbose:
+						print("No largest blob was found")
 			else:
 				if (timeout == 0):
 					print("No camera detected")
