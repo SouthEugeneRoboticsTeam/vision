@@ -89,7 +89,7 @@ def get_blob(im, lower, upper):
 	# Get largest blob
 	largest = get_largest(green_mask)
 
-	if largest is not False:
+	if largest is not None:
 		# Create mask of convex hull of green
 		hull = cv2.convexHull(largest)
 		contours = [hull]  # Draw contours requires an array
@@ -124,7 +124,7 @@ def get_largest(im):
 		# Find nth largest using data[n-1][1]
 		return sorted_areas[0][1]
 	else:
-		return False
+		return None
 
 
 def draw_crosshair(im, width, height, color, thickness):
