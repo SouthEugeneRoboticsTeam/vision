@@ -94,18 +94,17 @@ class Vision:
 
 						if self.display:
 							# Show the images
-							if blob is not None:
-								cv2.imshow("Original", im_rect)
-								cv2.imshow("Mask", im_mask)
-							else:
-								cv2.imshow("Original", im)
-
-							cv2.waitKey(0)
-
-							cv2.destroyAllWindows()
+							cv2.imshow("Original", im_rect)
+							cv2.imshow("Mask", im_mask)
 				else:
 					if verbose:
 						print("No largest blob was found")
+
+					if self.display:
+						cv2.imshow("Original", im)
+
+				if cv2.waitKey(1) & 0xFF == ord("q"):
+					break
 			else:
 				if (timeout == 0):
 					print("No camera detected")
