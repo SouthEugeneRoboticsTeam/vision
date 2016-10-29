@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-from networktables import NetworkTable
+import logging
+from networktables import NetworkTables
 
 from . import args
 
@@ -9,12 +10,15 @@ verbose = args["verbose"]
 
 vision_table = False
 
-if ip is not None:
-	NetworkTable.setIPAddress(ip)
-	NetworkTable.setClientMode()
-	NetworkTable.initialize()
+if verbose:
+	logging.basicConfig(level=logging.DEBUG)
+else:
+	logging.basicConfig(level=logging.INFO)
 
-	vision_table = NetworkTable.getTable("vision")
+if ip is not None:
+	NetworkTables.initialize(server=ip)
+
+	vision_table = NetworkTables.getTable("Vision")
 
 
 def put_number(key, value):
