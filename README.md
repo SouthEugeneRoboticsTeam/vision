@@ -28,20 +28,20 @@ All command-line arguments may be configured in the `config.ini` file
 (located at `config/config.ini`). For example, the `--lower-rgb`
 argument may be edited using the `lower-rgb` line in the `config.ini`.
 
-```
+```text
 -h, --help            show this help message and exit
 -i IMAGE, --image IMAGE
-					  path to image [env var: VISION_IMAGE]
--ma MIN_AREA, --min-area MIN_AREA
-					  minimum area for blobs [env var: VISION_MIN_AREA]
--lt LOWER_RGB [LOWER_RGB ...], --lower-rgb LOWER_RGB [LOWER_RGB ...]
-					  lower threshold for RGB values [env var: VISION_LOWER_RGB]
--ut UPPER_RGB [UPPER_RGB ...], --upper-rgb UPPER_RGB [UPPER_RGB ...]
-					  upper threshold RGB values [env var: VISION_UPPER_RGB]
--d, --display         display results of processing in a new window [env var: VISION_DISPLAY]
--v, --verbose         for debugging, prints useful values [env var: VISION_VERBOSE]
+					  path to image
+-d, --display         display results of processing in a new window
 -ip ROBORIO_IP, --roborio-ip ROBORIO_IP
-					  the ip address of the roboRIO [env var: VISION_ROBORIO_IP]
+					  the ip address of the roboRIO
+-ma MIN_AREA, --min-area MIN_AREA
+					  minimum area for blobs
+-lt LOWER_COLOR [LOWER_COLOR ...], --lower-color LOWER_COLOR [LOWER_COLOR ...]
+					  lower color threshold for BGR values
+-ut UPPER_COLOR [UPPER_COLOR ...], --upper-color UPPER_COLOR [UPPER_COLOR ...]
+					  upper color threshold for BGR values
+-v, --verbose         for debugging, prints useful values
 ```
 
 <!-- Badge URLs -->

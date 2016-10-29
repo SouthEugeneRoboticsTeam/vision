@@ -14,11 +14,11 @@ def get_args():
 	parser = configargparse.ArgParser(default_config_files=default_config, auto_env_var_prefix='VISION_')
 
 	parser.add_argument("-i", "--image", help="path to image")
+	parser.add_argument("-d", "--display", action="store_true", help="display results of processing in a new window")
+	parser.add_argument("-ip", "--roborio-ip", help="the ip address of the roboRIO")
 	parser.add_argument("-ma", "--min-area", type=int, help="minimum area for blobs")
 	parser.add_argument("-lt", "--lower-color", action="append", nargs="+", type=int, help="lower color threshold for BGR values")
 	parser.add_argument("-ut", "--upper-color", action="append", nargs="+", type=int, help="upper color threshold for BGR values")
-	parser.add_argument("-d", "--display", action="store_true", help="display results of processing in a new window")
-	parser.add_argument("-v", "--verbose", action='store_true', help="for debugging, prints useful values")
-	parser.add_argument("-ip", "--roborio-ip", help="the ip address of the roboRIO")
+	parser.add_argument("-v", "--verbose", action="store_true", help="for debugging, prints useful values")
 
 	return vars(parser.parse_args())
