@@ -22,6 +22,14 @@ Then, you can run the program using:
 $ python run.py
 ```
 
+Full usage:
+
+```text
+usage: run.py [-h] [-i IMAGE] [-d] [-ip ROBORIO_IP] [-ma MIN_AREA]
+              [-lt LOWER_COLOR [LOWER_COLOR ...]]
+              [-ut UPPER_COLOR [UPPER_COLOR ...]] [-v]
+```
+
 ## Configuration
 
 All command-line arguments may be configured in the `config.ini` file
