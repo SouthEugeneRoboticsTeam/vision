@@ -58,7 +58,7 @@ argument may be edited using the `lower-rgb` line in the `config.ini`.
 [team-url]:     https://sert2521.org
 [python-img]:   https://img.shields.io/badge/python-2.7-blue.svg?style=flat-square
 [python-url]:   https://www.python.org/downloads
-[license-img]:  https://img.shields.io/github/license/andrewda/robotics-vision.svg?style=flat-square
-[license-url]:  https://github.com/andrewda/robotics-vision/blob/master/LICENSE
-[travis-img]:   https://img.shields.io/travis/andrewda/robotics-vision.svg?style=flat-square
-[travis-url]:   https://travis-ci.org/andrewda/robotics-vision
+[license-img]:  https://img.shields.io/github/license/SouthEugeneRoboticsTeam/vision.svg?style=flat-square
+[license-url]:  https://github.com/SouthEugeneRoboticsTeam/vision/blob/master/LICENSE
+[travis-img]:   https://img.shields.io/travis/SouthEugeneRoboticsTeam/vision.svg?style=flat-square
+[travis-url]:   https://travis-ci.org/SouthEugeneRoboticsTeam/vision
