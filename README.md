@@ -32,6 +32,8 @@ usage: run.py [-h] [-i IMAGE] [-d] [-ip ROBORIO_IP] [-ma MIN_AREA]
 
 ## Configuration
 
+### Command-Line Options
+
 All command-line arguments may be configured in the `config.ini` file
 (located at `config/config.ini`). For example, the `--lower-rgb`
 argument may be edited using the `lower-rgb` line in the `config.ini`.
@@ -51,11 +53,18 @@ argument may be edited using the `lower-rgb` line in the `config.ini`.
 					  upper color threshold for BGR values
 -v, --verbose         for debugging, prints useful values
 ```
-For use with the Microsoft Lifecam 3000, the camera's exposure should be set manually because the Lifecam will auto-adjust otherwise, making thresholding difficult. This can be done with V4L:
+
+### Camera
+
+For use with the Microsoft Lifecam 3000, the camera's exposure should be
+set manually because the Lifecam will auto-adjust otherwise, making
+thresholding difficult. This can be done with V4L:
+
 ```
-sudo apt-get install v4l-utils
-v4l-ctl -d /dev/video0 -c exposure_absolute=50
+$ sudo apt-get install v4l-utils
+$ v4l-ctl -d /dev/video0 -c exposure_absolute=50
 ```
+
 <!-- Badge URLs -->
 
 [team-img]:     https://img.shields.io/badge/team-2521-7d26cd.svg?style=flat-square
