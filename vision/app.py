@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from imutils.video import WebcamVideoStream
 import numpy as np
 import vision.cv_utils as cv_utils
 import vision.nt_utils as nt_utils
@@ -68,7 +69,7 @@ class Vision:
 			cv2.destroyAllWindows()
 
 	def run_video(self):
-		camera = cv2.VideoCapture(0)
+		camera = WebcamVideoStream(src=0).start()
 
 		if self.verbose:
 			print("No image path specified, reading from camera video feed")
@@ -77,9 +78,9 @@ class Vision:
 
 		while(True):
 			# Read image from file
-			(ret, im) = camera.read()
+			im = camera.read()
 
-			if ret:
+			if im is not None:
 				blob, im_mask = cv_utils.get_blob(im, self.lower, self.upper)
 				if blob is not None:
 					x, y, w, h = cv2.boundingRect(blob)
@@ -115,5 +116,4 @@ class Vision:
 					print("Camera search timed out")
 					break
 
-		camera.release()
 		cv2.destroyAllWindows()
