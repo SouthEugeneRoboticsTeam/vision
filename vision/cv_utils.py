@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import cv2
-import numpy as np
 from . import args
 
 verbose = args["verbose"]
@@ -86,25 +85,15 @@ def get_blob(im, lower, upper):
 		return None, None
 
 	# Get largest blob
-	largest = get_largest(green_mask)
+	largest = get_largest(green_mask, 1)
 
 	if largest is not None:
-		# Create mask of convex hull of green
-		hull = cv2.convexHull(largest)
-		contours = [hull]  # Draw contours requires an array
-		hull_mask = np.zeros(green_mask.shape, np.uint8)
-		# -1 thickness means fill
-		cv2.drawContours(hull_mask, contours, 0, color=255, thickness=-1)
-
-		# Create mask of exclusion of hull and green mask
-		ex_mask = cv2.bitwise_and(cv2.bitwise_not(green_mask), hull_mask)
-		largest = get_largest(ex_mask)  # Removes left over edge pieces
-		return largest, ex_mask
+		return largest, green_mask
 	else:
 		return None, None
 
 
-def get_largest(im):
+def get_largest(im, n):
 	# Find contours of the shape
 	if (cv2.__version__ == '3.1.0-dev') or (cv2.__version__ == '3.1.0') or (cv2.__version__ == '3.0.0-dev') or (cv2.__version__ == '3.0.0'):
 		_, contours, _ = cv2.findContours(im.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -121,7 +110,7 @@ def get_largest(im):
 
 	if sorted_areas:
 		# Find nth largest using data[n-1][1]
-		return sorted_areas[0][1]
+		return sorted_areas[n - 1][1]
 	else:
 		return None
 
