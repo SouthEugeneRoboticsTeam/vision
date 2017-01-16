@@ -25,7 +25,7 @@ $ python run.py
 Full usage:
 
 ```text
-usage: run.py [-h] [-i IMAGE] [-d] [-ip ROBORIO_IP] [-ma MIN_AREA]
+usage: run.py [-h] [-i IMAGE] [-s SOURCE] [-d] [-ip ROBORIO_IP] [-ma MIN_AREA]
               [-lt LOWER_COLOR [LOWER_COLOR ...]]
               [-ut UPPER_COLOR [UPPER_COLOR ...]] [-v]
 ```
@@ -41,16 +41,18 @@ argument may be edited using the `lower-rgb` line in the `config.ini`.
 ```text
 -h, --help            show this help message and exit
 -i IMAGE, --image IMAGE
-					  path to image
+                      path to image
+-s SOURCE, --source SOURCE
+                      video source (default=0)
 -d, --display         display results of processing in a new window
 -ip ROBORIO_IP, --roborio-ip ROBORIO_IP
-					  the ip address of the roboRIO
+                      the ip address of the roboRIO
 -ma MIN_AREA, --min-area MIN_AREA
-					  minimum area for blobs
+                      minimum area for blobs
 -lt LOWER_COLOR [LOWER_COLOR ...], --lower-color LOWER_COLOR [LOWER_COLOR ...]
-					  lower color threshold for BGR values
+                      lower color threshold for BGR values
 -ut UPPER_COLOR [UPPER_COLOR ...], --upper-color UPPER_COLOR [UPPER_COLOR ...]
-					  upper color threshold for BGR values
+                      upper color threshold for BGR values
 -v, --verbose         for debugging, prints useful values
 ```
 
