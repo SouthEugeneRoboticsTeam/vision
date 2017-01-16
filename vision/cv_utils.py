@@ -68,9 +68,6 @@ def draw_images(im, x, y, w, h):
 	# Put text on screen
 	draw_offset(im_rect, offset_x, offset_y, (0, 30), 1, (255, 0, 0))
 
-	# Draw crosshair on the screen
-	draw_crosshair(im_rect, width, height, (0, 0, 0), 2)
-
 	return im_rect
 
 
@@ -113,11 +110,6 @@ def get_largest(im, n):
 		return sorted_areas[n - 1][1]
 	else:
 		return None
-
-
-def draw_crosshair(im, width, height, color, thickness):
-	cv2.line(im, (width / 2, 0), (width / 2, height), color, thickness=thickness)
-	cv2.line(im, (0, height / 2), (width, height / 2), color, thickness=thickness)
 
 
 def draw_offset(im, offset_x, offset_y, point, size, color):

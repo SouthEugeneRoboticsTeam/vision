@@ -78,6 +78,7 @@ class Vision:
 		while(True):
 			# Read image from file
 			im = camera.read()
+			im = cv2.resize(im, (600, 480), 0, 0)
 
 			if im is not None:
 				blob, im_mask = cv_utils.get_blob(im, self.lower, self.upper)
@@ -86,16 +87,18 @@ class Vision:
 					if w * h > self.min_area:
 						if verbose:
 							print("[Blob] x: %d, y: %d, width: %d, height: %d, area: %d" % (x, y, w, h, w * h))
-						im_rect = cv_utils.draw_images(im, x, y, w, h)
 						offset_x, offset_y = cv_utils.process_image(im, x, y, w, h)
 
 						nt_utils.put_number("offset_x", offset_x)
 						nt_utils.put_number("offset_y", offset_y)
 
-						if self.display:
-							# Show the images
-							cv2.imshow("Original", im_rect)
-							cv2.imshow("Mask", im_mask)
+						# Draw image details
+						im = cv_utils.draw_images(im, x, y, w, h)
+
+					if self.display:
+						# Show the images
+						cv2.imshow("Original", im)
+						cv2.imshow("Mask", im_mask)
 				else:
 					if verbose:
 						print("No largest blob was found")
