@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-import sys
-import os
 import configargparse
+import os
+import sys
 
 
 def get_args():

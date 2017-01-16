@@ -2,7 +2,6 @@
 
 import logging
 from networktables import NetworkTables
-
 from . import args
 
 ip = args["roborio_ip"]

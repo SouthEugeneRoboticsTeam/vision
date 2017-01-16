@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 
-from imutils.video import WebcamVideoStream
+import cv2
 import numpy as np
 import vision.cv_utils as cv_utils
 import vision.nt_utils as nt_utils
-import cv2
-
+from imutils.video import WebcamVideoStream
 from . import args
 
 verbose = args["verbose"]
