@@ -44,12 +44,20 @@ class Vision:
 
 		blob, im_mask = cv_utils.get_blob(im, self.lower, self.upper)
 		if blob is not None:
-			x, y, w, h = cv2.boundingRect(blob)
-			if w * h > self.min_area:
+			x1, y1, w1, h1 = cv2.boundingRect(blob[0])
+			x2, y2, w2, h2 = cv2.boundingRect(blob[1])
+
+			if w1 * h1 > self.min_area and w2 * h2 > self.min_area:
 				if verbose:
-					print("[Blob] x: %d, y: %d, width: %d, height: %d, area: %d" % (x, y, w, h, w * h))
-				im_rect = cv_utils.draw_images(im, x, y, w, h)
-				offset_x, offset_y = cv_utils.process_image(im, x, y, w, h)
+					print("[Blob 1] x: %d, y: %d, width: %d, height: %d, area: %d" % (x1, y1, w1, h1, w1 * h1))
+					print("[Blob 2] x: %d, y: %d, width: %d, height: %d, area: %d" % (x2, y2, w2, h2, w2 * h2))
+
+				im_rect = cv_utils.draw_images(im, x1, y1, w1, h1)
+
+				offset_x, offset_y = cv_utils.process_image(im, x1 * x2 / 2, y1 * y2 / 2, w1 * w2 / 2, h1 * h2 / 2)
+
+				print(offset_x)
+				print(offset_y)
 
 				nt_utils.put_number("offset_x", offset_x)
 				nt_utils.put_number("offset_y", offset_y)
@@ -85,17 +93,20 @@ class Vision:
 			if im is not None:
 				blob, im_mask = cv_utils.get_blob(im, self.lower, self.upper)
 				if blob is not None:
-					x, y, w, h = cv2.boundingRect(blob)
-					if w * h > self.min_area:
+					x1, y1, w1, h1 = cv2.boundingRect(blob[0])
+					x2, y2, w2, h2 = cv2.boundingRect(blob[1])
+					if w1 * h1 > self.min_area and w2 * h2 > self.min_area:
 						if verbose:
-							print("[Blob] x: %d, y: %d, width: %d, height: %d, area: %d" % (x, y, w, h, w * h))
-						offset_x, offset_y = cv_utils.process_image(im, x, y, w, h)
+							print("[Blob] x: %d, y: %d, width: %d, height: %d, area: %d" % (x1, y1, w1, h1, w1 * h1))
+
+						offset_x, offset_y = cv_utils.process_image(im, x1, y1, w1, h1, x2, y2, w2, h2)
 
 						nt_utils.put_number("offset_x", offset_x)
 						nt_utils.put_number("offset_y", offset_y)
 
 						# Draw image details
-						im = cv_utils.draw_images(im, x, y, w, h)
+						im = cv_utils.draw_images(im, x1, y1, w1, h1)
+						im = cv_utils.draw_images(im, x2, y2, w2, h2)
 
 					if self.display:
 						# Show the images

@@ -6,7 +6,7 @@ from . import args
 verbose = args["verbose"]
 
 
-def process_image(im, x, y, w, h):
+def process_image(im, x1, y1, w1, h1, x2, y2, w2, h2):
 	# Get image height and width
 	height, width = im.shape[:2]
 
@@ -17,18 +17,18 @@ def process_image(im, x, y, w, h):
 	offset_y = 0
 
 	# Find center of goal
-	center_x = int(0.5 * (x + (x + w)))
-	center_y = int(0.5 * (y + (y + h)))
+	center_x = (int(0.5 * (x1 + (x1 + w1))) + int(0.5 * (x2 + (x2 + w2)))) / 2
+	center_y = (int(0.5 * (y1 + (y1 + h1))) + int(0.5 * (y2 + (y2 + h2)))) / 2
 
 	if verbose:
-		print("[Blob] center: (%d, %d)" % (center_x, center_y))
+		print("[Goal] center: (%d, %d)" % (center_x, center_y))
 
 	# Find pixels away from center
 	offset_x = int(width / 2 - center_x) * -1
 	offset_y = int(height / 2 - center_y)
 
 	if verbose:
-		print("[Blob] offset: (%d, %d)" % (offset_x, offset_y))
+		print("[Goal] offset: (%d, %d)" % (offset_x, offset_y))
 
 	return offset_x, offset_y
 
@@ -83,9 +83,10 @@ def get_blob(im, lower, upper):
 
 	# Get largest blob
 	largest = get_largest(green_mask, 1)
+	second_largest = get_largest(green_mask, 2)
 
-	if largest is not None:
-		return largest, green_mask
+	if largest is not None and second_largest is not None:
+		return [largest, second_largest], green_mask
 	else:
 		return None, None
 
@@ -105,7 +106,7 @@ def get_largest(im, n):
 	# Sort array of areas by size
 	sorted_areas = sorted(zip(areas, contours), key=lambda x: x[0], reverse=True)
 
-	if sorted_areas:
+	if sorted_areas and len(sorted_areas) >= n:
 		# Find nth largest using data[n-1][1]
 		return sorted_areas[n - 1][1]
 	else:
