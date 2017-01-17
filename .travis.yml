@@ -18,4 +18,5 @@ before_script:
   - export PYTHONPATH=$PYTHONPATH:/usr/lib/python2.7/site-packages/
 script:
   - flake8 --statistics --show-source --disable-noqa
-  - python run.py -i tests/images/goal.png
+  - python run.py -i tests/images/goal2016.png
+  - python run.py -i tests/images/goal2017.png
