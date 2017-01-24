@@ -1,1 +1,1 @@
-python run.py -di "tests/images/goal.png"
+python run.py -di "tests/images/goal2017.png"
