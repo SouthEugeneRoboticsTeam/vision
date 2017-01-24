@@ -93,7 +93,8 @@ def get_blob(im, lower, upper):
 
 def get_largest(im, n):
 	# Find contours of the shape
-	if (cv2.__version__ == '3.1.0-dev') or (cv2.__version__ == '3.1.0') or (cv2.__version__ == '3.0.0-dev') or (cv2.__version__ == '3.0.0'):
+	major = cv2.__version__.split('.')[0]
+	if major == '3':
 		_, contours, _ = cv2.findContours(im.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 	else:
 		contours, _ = cv2.findContours(im.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
