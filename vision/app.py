@@ -25,7 +25,7 @@ class Vision:
 
 		self.verbose = self.args["verbose"]
 
-		self.source = self.args["source"]
+		self.source = self.args["sources"]
 
 		if self.verbose:
 			print(self.args)
