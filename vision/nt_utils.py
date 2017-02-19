@@ -25,3 +25,9 @@ def put_number(key, value):
 		vision_table.putNumber(key, value)
 	elif verbose:
 		print("[NetworkTable] not connected")
+
+def get_boolean(key):
+	if vision_table:
+		vision_table.getBoolean(key)
+	elif verbose:
+		print("[NetworkTable] not connected")

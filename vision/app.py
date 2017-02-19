@@ -78,7 +78,8 @@ class Vision:
 			cv2.destroyAllWindows()
 
 	def run_video(self):
-		camera = WebcamVideoStream(src=self.source).start()
+		cameraFront = WebcamVideoStream(src=self.source[0]).start()
+		cameraRear = WebcamVideoStream(src=self.source[1]).start()
 
 		if self.verbose:
 			print("No image path specified, reading from camera video feed")
@@ -86,8 +87,11 @@ class Vision:
 		timeout = 0
 
 		while(True):
-			# Read image from file
-			im = camera.read()
+			if nt_utils.get_boolean("front_camera"):
+				im = cameraFront.read()
+			else:
+				im = cameraRear.read()
+
 			im = cv2.resize(im, (600, 480), 0, 0)
 
 			if im is not None:
