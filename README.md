@@ -25,7 +25,7 @@ $ python run.py
 Full usage:
 
 ```text
-usage: run.py [-h] [-i IMAGE] [-s SOURCE] [-d] [-ip ROBORIO_IP] [-ma MIN_AREA]
+usage: run.py [-h] [-i IMAGE] [-s SOURCES] [-d] [-ip ROBORIO_IP] [-ma MIN_AREA]
               [-lt LOWER_COLOR [LOWER_COLOR ...]]
               [-ut UPPER_COLOR [UPPER_COLOR ...]] [-v]
 ```
@@ -42,8 +42,8 @@ argument may be edited using the `lower-rgb` line in the `config.ini`.
 -h, --help            show this help message and exit
 -i IMAGE, --image IMAGE
                       path to image
--s SOURCE, --source SOURCE
-                      video source (default=0)
+-s SOURCES, --source SOURCES
+                      video sources (default=[0,1])
 -d, --display         display results of processing in a new window
 -ip ROBORIO_IP, --roborio-ip ROBORIO_IP
                       the ip address of the roboRIO
