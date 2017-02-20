@@ -109,11 +109,11 @@ class Vision:
 						nt_utils.put_number("offset_x", offset_x)
 						nt_utils.put_number("offset_y", offset_y)
 
-						# Draw image details
-						im = cv_utils.draw_images(im, x1, y1, w1, h1)
-						im = cv_utils.draw_images(im, x2, y2, w2, h2)
-
 					if self.display:
+						# Draw image details
+						im = cv_utils.draw_images(im, x1, y1, w1, h1, True)
+						im = cv_utils.draw_images(im, x2, y2, w2, h2, False)
+
 						# Show the images
 						cv2.imshow("Original", im)
 						cv2.imshow("Mask", im_mask)

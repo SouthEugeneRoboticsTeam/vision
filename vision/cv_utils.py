@@ -33,7 +33,7 @@ def process_image(im, x1, y1, w1, h1, x2, y2, w2, h2):
 	return offset_x, offset_y
 
 
-def draw_images(im, x, y, w, h):
+def draw_images(im, x, y, w, h, left):
 	# Parameters are image and blob dimensions
 
 	# Get image height and width
@@ -66,7 +66,10 @@ def draw_images(im, x, y, w, h):
 	cv2.circle(im_rect, (center_x, center_y), 2, (255, 0, 0), thickness=3)
 
 	# Put text on screen
-	draw_offset(im_rect, offset_x, offset_y, (0, 30), 1, (255, 0, 0))
+	if left == True:
+		draw_offset(im_rect, offset_x, offset_y, (0, 30), 1, (255, 0, 0))
+	else:
+		draw_offset(im_rect, offset_x, offset_y, (400, 30), 1, (255, 0, 0))
 
 	return im_rect
 
