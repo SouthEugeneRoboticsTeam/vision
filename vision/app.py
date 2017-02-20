@@ -18,6 +18,7 @@ class Vision:
 		self.upper = np.array(self.args["upper_color"], dtype="uint8")
 
 		self.min_area = int(self.args["min_area"])
+		self.max_area = int(self.args["max_area"])
 
 		self.image = self.args["image"]
 
@@ -99,7 +100,7 @@ class Vision:
 				if blob is not None:
 					x1, y1, w1, h1 = cv2.boundingRect(blob[0])
 					x2, y2, w2, h2 = cv2.boundingRect(blob[1])
-					if w1 * h1 > self.min_area and w2 * h2 > self.min_area:
+					if w1 * h1 > self.min_area and w2 * h2 > self.min_area and w1 * h1 > self.max_area and w2 * h2 > self.max_area:
 						if verbose:
 							print("[Blob] x: %d, y: %d, width: %d, height: %d, area: %d" % (x1, y1, w1, h1, w1 * h1))
 
