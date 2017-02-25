@@ -103,15 +103,17 @@ class Vision:
 				im = cameraRear.read()
 				try:
 					lowerThreshold = np.array([nt_utils.get_number("rear_lower_blue"), nt_utils.get_number("rear_lower_green"), nt_utils.get_number("rear_lower_red")])
-                               		upperThreshold = np.array([nt_utils.get_number("rear_upper_blue"), nt_utils.get_number("rear_upper_green"), nt_utils.get_number("rear_upper_red")])
+					upperThreshold = np.array([nt_utils.get_number("rear_upper_blue"), nt_utils.get_number("rear_upper_green"), nt_utils.get_number("rear_upper_red")])
 				except:
 					lowerThreshold = self.lower
 					upperThreshold = self.upper
 			im = cv2.resize(im, (600, 480), 0, 0)
 
 			if im is not None:
-				blob, im_mask = cv_utils.get_blob(im, self.lower, self.upper)
-				blob, im_mask = cv_utils.get_blob(im, lowerThreshold, upperThreshold)
+				try:
+					blob, im_mask = cv_utils.get_blob(im, lowerThreshold, upperThreshold)
+				except TypeError:
+					blob, im_mask = cv_utils.get_blob(im, self.lower, self.upper)
 				if blob is not None:
 					#nt_utils.put_boolean("blob_found", True)
 
