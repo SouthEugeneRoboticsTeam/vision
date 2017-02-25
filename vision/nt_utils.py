@@ -21,13 +21,44 @@ if ip is not None:
 
 
 def put_number(key, value):
+#	print key, value
 	if vision_table:
 		vision_table.putNumber(key, value)
 	elif verbose:
 		print("[NetworkTable] not connected")
 
-def get_boolean(key):
+def put_boolean(key, value):
+	print key, value
 	if vision_table:
-		vision_table.getBoolean(key)
+		vision_table.putBoolean(key, value)
 	elif verbose:
 		print("[NetworkTable] not connected")
+
+def get_boolean(key):
+	if vision_table:
+		print vision_table.getBoolean(key)
+		return vision_table.getBoolean(key)
+	elif verbose:
+		print("[NetworkTable] not connected")
+
+def get_number(key):
+        if vision_table:
+                print vision_table.getNumber(key)
+                return vision_table.getNumber(key)
+        elif verbose:
+                print("[NetworkTable] not connected")
+
+
+#put_boolean("front_camera", True)
+#put_number("front_lower_blue", 0)
+#put_number("front_lower_green", 0)
+#put_number("front_lower_red", 0)
+#put_number("front_upper_blue", 0)
+#put_number("front_upper_green", 0)
+#put_number("front_upper_red", 0)
+#put_number("rear_lower_blue", 0)
+#put_number("rear_lower_green", 0)
+#put_number("rear_lower_red", 0)
+#put_number("rear_upper_blue", 0)
+#put_number("rear_upper_green", 0)
+#put_number("rear_upper_red", 0)
