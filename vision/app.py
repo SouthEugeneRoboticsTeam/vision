@@ -107,9 +107,9 @@ class Vision:
 				except:
 					lowerThreshold = self.lower
 					upperThreshold = self.upper
-			im = cv2.resize(im, (600, 480), 0, 0)
 
 			if im is not None:
+				im = cv2.resize(im, (600, 480), 0, 0)
 				try:
 					blob, im_mask = cv_utils.get_blob(im, lowerThreshold, upperThreshold)
 				except TypeError:
