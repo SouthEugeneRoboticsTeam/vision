@@ -6,6 +6,7 @@ import vision.cv_utils as cv_utils
 import vision.nt_utils as nt_utils
 from imutils.video import WebcamVideoStream
 from . import args
+import os
 
 verbose = args["verbose"]
 
@@ -90,6 +91,11 @@ class Vision:
 		#upperThreshold = []
 
 		while(True):
+			if nt_utils.get_boolean("Shutdown"){
+				os.system("shutdown -H now")
+				return
+			}
+
 			if nt_utils.get_boolean("front_camera"):
 				im = cameraFront.read()
 				try:
