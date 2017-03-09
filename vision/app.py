@@ -82,7 +82,7 @@ class Vision:
 	def run_video(self):
 		cameraFront = WebcamVideoStream(src=self.source[1]).start()
 		cameraRear = WebcamVideoStream(src=self.source[0]).start()
-
+		
 		if self.verbose:
 			print("No image path specified, reading from camera video feed")
 
@@ -91,7 +91,7 @@ class Vision:
 		#upperThreshold = []
 
 		while(True):
-			if nt_utils.get_boolean("Shutdown"){
+			if nt_utils.get_boolean("shutdown"){
 				os.system("shutdown -H now")
 				return
 			}
