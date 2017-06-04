@@ -16,6 +16,7 @@ before_script:
      then
        echo "cache exists";
        cd opencv/build;
+       ls;
      else
        rm -r opencv;
        git clone https://github.com/Itseez/opencv.git;
