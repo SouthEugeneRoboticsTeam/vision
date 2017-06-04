@@ -29,9 +29,9 @@ def put_number(key, value):
 	except:
 		print "NetworkTable error putting number"
 
+
 def put_boolean(key, value):
 	try:
-		print key, value
 		if vision_table:
 			vision_table.putBoolean(key, value)
 		elif verbose:
@@ -39,10 +39,10 @@ def put_boolean(key, value):
 	except:
 		print "NetworkTable error putting boolean"
 
+
 def get_boolean(key):
 	try:
 		if vision_table:
-			print vision_table.getBoolean(key)
 			return vision_table.getBoolean(key)
 		elif verbose:
 			print("[NetworkTable] not connected")
@@ -50,13 +50,13 @@ def get_boolean(key):
 		return False
 		print "NetworkTable error getting boolean"
 
+
 def get_number(key):
-    try:
+	try:
 		if vision_table:
-            print vision_table.getNumber(key)
-            return vision_table.getNumber(key)
-    	elif verbose:
-            print("[NetworkTable] not connected")
+			return vision_table.getNumber(key)
+		elif verbose:
+			print("[NetworkTable] not connected")
 	except:
 		return 0
 		print "NetworkTable error getting number"

@@ -66,7 +66,7 @@ def draw_images(im, x, y, w, h, side):
 	cv2.circle(im_rect, (center_x, center_y), 2, (255, 0, 0), thickness=3)
 
 	# Put text on screen
-	if side == True:
+	if side is True:
 		draw_offset(im_rect, offset_x, offset_y, (0, 30), 1, (255, 255, 255))
 	else:
 		draw_offset(im_rect, offset_x, offset_y, (400, 30), 1, (255, 255, 255))

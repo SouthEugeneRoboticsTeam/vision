@@ -54,7 +54,7 @@ class Vision:
 					print("[Blob 1] x: %d, y: %d, width: %d, height: %d, area: %d" % (x1, y1, w1, h1, w1 * h1))
 					print("[Blob 2] x: %d, y: %d, width: %d, height: %d, area: %d" % (x2, y2, w2, h2, w2 * h2))
 
-				im_rect = cv_utils.draw_images(im, x1, y1, w1, h1, false)
+				im_rect = cv_utils.draw_images(im, x1, y1, w1, h1, False)
 
 				offset_x, offset_y = cv_utils.process_image(im, x1 * x2 / 2, y1 * y2 / 2, w1 * w2 / 2, h1 * h2 / 2)
 
@@ -82,19 +82,16 @@ class Vision:
 	def run_video(self):
 		cameraFront = WebcamVideoStream(src=self.source[1]).start()
 		cameraRear = WebcamVideoStream(src=self.source[0]).start()
-		
+
 		if self.verbose:
 			print("No image path specified, reading from camera video feed")
 
 		timeout = 0
-		#lowerThreshold = []
-		#upperThreshold = []
 
-		while(True):
-			if nt_utils.get_boolean("shutdown"){
+		while True:
+			if nt_utils.get_boolean("shutdown"):
 				os.system("shutdown -H now")
 				return
-			}
 
 			if nt_utils.get_boolean("front_camera"):
 				im = cameraFront.read()
@@ -121,8 +118,6 @@ class Vision:
 				except TypeError:
 					blob, im_mask = cv_utils.get_blob(im, self.lower, self.upper)
 				if blob is not None:
-					#nt_utils.put_boolean("blob_found", True)
-
 					x1, y1, w1, h1 = cv2.boundingRect(blob[0])
 					x2, y2, w2, h2 = cv2.boundingRect(blob[1])
 
@@ -141,21 +136,19 @@ class Vision:
 						nt_utils.put_number("blob1_size", w1 * h1)
 						nt_utils.put_number("blob2_size", w2 * h2)
 					else:
-						nt_utils.put_boolean("blob_found", False);
+						nt_utils.put_boolean("blob_found", False)
 
 					if self.display:
-
 						# Draw image details
-                                                im = cv_utils.draw_images(im, x1, y1, w1, h1, True)
-                                                im = cv_utils.draw_images(im, x2, y2, w2, h2, False)
+						im = cv_utils.draw_images(im, x1, y1, w1, h1, True)
+						im = cv_utils.draw_images(im, x2, y2, w2, h2, False)
 
 						# Show the images
 						cv2.imshow("Original", im)
 						cv2.imshow("Mask", im_mask)
-
-
 				else:
-					nt_utils.put_boolean("blob_found", False);
+					nt_utils.put_boolean("blob_found", False)
+
 					if verbose:
 						print("No largest blob was found")
 
