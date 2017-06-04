@@ -15,6 +15,7 @@ before_script:
   - 'if [ -n "$(ls -A opencv/build)" ];
      then
        echo "cache exists";
+       cd opencv/build;
      else
        rm -r opencv;
        git clone https://github.com/Itseez/opencv.git;
