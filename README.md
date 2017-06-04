@@ -75,5 +75,5 @@ $ v4l-ctl -d /dev/video0 -c exposure_absolute=50
 [python-url]:   https://www.python.org/downloads
 [license-img]:  https://img.shields.io/github/license/SouthEugeneRoboticsTeam/vision.svg?style=flat-square
 [license-url]:  https://github.com/SouthEugeneRoboticsTeam/vision/blob/master/LICENSE
-[travis-img]:   https://img.shields.io/travis/SouthEugeneRoboticsTeam/vision.svg?style=flat-square
+[travis-img]:   https://img.shields.io/travis/SouthEugeneRoboticsTeam/vision/master.svg?style=flat-square
 [travis-url]:   https://travis-ci.org/SouthEugeneRoboticsTeam/vision
