@@ -3,7 +3,9 @@ python: 2.7
 cache:
   pip: true
   directories:
-    - opencv/build
+    - opencv/
+    - opencv/build/
+    - opencv/build/*
 install:
   - sudo apt-get install python-dev python-numpy
   - pip install flake8
