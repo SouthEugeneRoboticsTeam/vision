@@ -2,7 +2,7 @@ ls
 ls opencv
 ls opencv/build
 files=(opencv/build/*)
-if [ -n "$(ls -A sad)" ]
+if [ -n "$(ls -A opencv/build)" ]
 then
     echo "cache exists"
 else
