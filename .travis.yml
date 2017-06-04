@@ -10,6 +10,8 @@ install:
   - pip install -r requirements.txt
 before_script:
   - ls
+  - ls opencv
+  - ls opencv/build
   - git clone https://github.com/Itseez/opencv.git
   - cd opencv
   - git checkout 2.4
