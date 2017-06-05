@@ -1,14 +1,13 @@
 if [ -n "$(ls -A opencv/build)" ];
 then
+    # We're using a cached version of our OpenCV build
     cd opencv;
     git init;
     git remote add origin https://github.com/Itseez/opencv.git;
     git fetch origin 2.4;
     git checkout origin/2.4;
-    ls;
-    cd build;
-    ls;
 else
+    # No OpenCV cache – clone and make the files
     rm -r opencv;
     git clone https://github.com/Itseez/opencv.git;
     cd opencv;
