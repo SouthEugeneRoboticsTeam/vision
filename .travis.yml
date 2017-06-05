@@ -9,17 +9,11 @@ install:
   - pip install flake8
   - pip install -r requirements.txt
 before_script:
-  - ls
-  - ls opencv
-  - ls opencv/build
   - bash build_opencv.sh
   - cd opencv/build/
   - sudo make install
   - cd ../../
   - export PYTHONPATH=$PYTHONPATH:/usr/lib/python2.7/site-packages/
-  - ls
-  - ls opencv
-  - ls opencv/build
 script:
   - flake8 --statistics --show-source --disable-noqa
   - python run.py -i tests/images/goal2016.png
