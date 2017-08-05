@@ -161,6 +161,7 @@ class Vision:
 
 				if self.stream:
 					self.picture = im
+					self.picture_mask = im_mask
 
 			else:
 				nt_utils.put_boolean("blob_found", False)
