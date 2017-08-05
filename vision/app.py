@@ -4,7 +4,6 @@ import cv2
 import numpy as np
 import vision.cv_utils as cv_utils
 import vision.nt_utils as nt_utils
-# import vision.stream as stream
 from imutils.video import WebcamVideoStream
 from . import args
 import os
