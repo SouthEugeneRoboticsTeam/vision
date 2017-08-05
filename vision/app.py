@@ -88,7 +88,7 @@ class Vision:
 		if self.verbose:
 			print("No image path specified, reading from camera video feed")
 
-		timeout = 0
+		self.timeout = 0
 
 		if not self.stream:
 			while True:
@@ -177,11 +177,11 @@ class Vision:
 			if cv2.waitKey(1) & 0xFF == ord("q"):
 				return
 		else:
-			if (timeout == 0):
+			if (self.timeout == 0):
 				print("No camera detected")
 
-			timeout += 1
+			self.timeout += 1
 
-			if (timeout > 500):
+			if (self.timeout > 500):
 				print("Camera search timed out")
 				return
