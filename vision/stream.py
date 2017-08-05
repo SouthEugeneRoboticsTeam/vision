@@ -21,7 +21,7 @@ def gen(camera):
     camera.run()
 
     while True:
-        camera.get_frame(camera.cameraFront, camera.cameraRear)
+        camera.get_frame()
         frame = camera.picture
         cv2.imwrite('t.jpg', frame)
         yield (b'--frame\r\n'

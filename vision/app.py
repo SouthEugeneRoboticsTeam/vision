@@ -90,18 +90,18 @@ class Vision:
 			print("No image path specified, reading from camera video feed")
 
 		timeout = 0
-		print self.stream
+
 		if not self.stream:
 			while True:
-				self.get_frame(self.cameraFront, self.cameraRear)
+				self.get_frame()
 
-	def get_frame(self, cameraFront, cameraRear):
+	def get_frame(self):
 		if nt_utils.get_boolean("shutdown"):
 			os.system("shutdown -H now")
 			return
 
 		if nt_utils.get_boolean("front_camera"):
-			im = cameraFront.read()
+			im = self.cameraFront.read()
 			try:
 				lowerThreshold = np.array([nt_utils.get_number("front_lower_blue"), nt_utils.get_number("front_lower_green"), nt_utils.get_number("front_lower_red")])
 				upperThreshold = np.array([nt_utils.get_number("front_upper_blue"), nt_utils.get_number("front_upper_green"), nt_utils.get_number("front_upper_red")])
@@ -110,7 +110,7 @@ class Vision:
 				upperThreshold = self.upper
 
 		else:
-			im = cameraRear.read()
+			im = self.cameraRear.read()
 			try:
 				lowerThreshold = np.array([nt_utils.get_number("rear_lower_blue"), nt_utils.get_number("rear_lower_green"), nt_utils.get_number("rear_lower_red")])
 				upperThreshold = np.array([nt_utils.get_number("rear_upper_blue"), nt_utils.get_number("rear_upper_green"), nt_utils.get_number("rear_upper_red")])
@@ -153,7 +153,7 @@ class Vision:
 					im = cv_utils.draw_images(im, x1, y1, w1, h1, True)
 					im = cv_utils.draw_images(im, x2, y2, w2, h2, False)
 
-				if self.dislay:
+				if self.display:
 					# Show the images
 					cv2.imshow("Original", im)
 					cv2.imshow("Mask", im_mask)

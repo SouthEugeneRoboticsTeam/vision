@@ -7,10 +7,8 @@ import vision.stream as stream
 video_stream = args['stream']
 app = Vision()
 
-print video_stream
-if video_stream is not None:
+if not video_stream:
     app.run()
-    # stream
 
 else:
-    app.run()
+    stream.app.run()
