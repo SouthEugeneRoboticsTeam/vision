@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 import vision.cv_utils as cv_utils
 import vision.nt_utils as nt_utils
+# import vision.stream as stream
 from imutils.video import WebcamVideoStream
 from . import args
 import os
@@ -24,6 +25,8 @@ class Vision:
 		self.image = self.args["image"]
 
 		self.display = self.args["display"]
+
+		self.stream = self.args["stream"]
 
 		self.verbose = self.args["verbose"]
 
@@ -80,91 +83,106 @@ class Vision:
 			cv2.destroyAllWindows()
 
 	def run_video(self):
-		cameraFront = WebcamVideoStream(src=self.source[1]).start()
-		cameraRear = WebcamVideoStream(src=self.source[0]).start()
+		self.cameraFront = WebcamVideoStream(src=self.source[1]).start()
+		self.cameraRear = WebcamVideoStream(src=self.source[0]).start()
 
 		if self.verbose:
 			print("No image path specified, reading from camera video feed")
 
 		timeout = 0
+		print self.stream
+		if not self.stream:
+			while True:
+				self.get_frame(self.cameraFront, self.cameraRear)
 
-		while True:
-			if nt_utils.get_boolean("shutdown"):
-				os.system("shutdown -H now")
-				return
+	def get_frame(self, cameraFront, cameraRear):
+		if nt_utils.get_boolean("shutdown"):
+			os.system("shutdown -H now")
+			return
 
-			if nt_utils.get_boolean("front_camera"):
-				im = cameraFront.read()
-				try:
-					lowerThreshold = np.array([nt_utils.get_number("front_lower_blue"), nt_utils.get_number("front_lower_green"), nt_utils.get_number("front_lower_red")])
-					upperThreshold = np.array([nt_utils.get_number("front_upper_blue"), nt_utils.get_number("front_upper_green"), nt_utils.get_number("front_upper_red")])
-				except:
-					lowerThreshold = self.lower
-					upperThreshold = self.upper
-				print upperThreshold, lowerThreshold
-			else:
-				im = cameraRear.read()
-				try:
-					lowerThreshold = np.array([nt_utils.get_number("rear_lower_blue"), nt_utils.get_number("rear_lower_green"), nt_utils.get_number("rear_lower_red")])
-					upperThreshold = np.array([nt_utils.get_number("rear_upper_blue"), nt_utils.get_number("rear_upper_green"), nt_utils.get_number("rear_upper_red")])
-				except:
-					lowerThreshold = self.lower
-					upperThreshold = self.upper
+		if nt_utils.get_boolean("front_camera"):
+			im = cameraFront.read()
+			try:
+				lowerThreshold = np.array([nt_utils.get_number("front_lower_blue"), nt_utils.get_number("front_lower_green"), nt_utils.get_number("front_lower_red")])
+				upperThreshold = np.array([nt_utils.get_number("front_upper_blue"), nt_utils.get_number("front_upper_green"), nt_utils.get_number("front_upper_red")])
+			except:
+				lowerThreshold = self.lower
+				upperThreshold = self.upper
 
-			if im is not None:
-				im = cv2.resize(im, (600, 480), 0, 0)
-				try:
-					blob, im_mask = cv_utils.get_blob(im, lowerThreshold, upperThreshold)
-				except TypeError:
-					blob, im_mask = cv_utils.get_blob(im, self.lower, self.upper)
-				if blob is not None:
-					x1, y1, w1, h1 = cv2.boundingRect(blob[0])
-					x2, y2, w2, h2 = cv2.boundingRect(blob[1])
+		else:
+			im = cameraRear.read()
+			try:
+				lowerThreshold = np.array([nt_utils.get_number("rear_lower_blue"), nt_utils.get_number("rear_lower_green"), nt_utils.get_number("rear_lower_red")])
+				upperThreshold = np.array([nt_utils.get_number("rear_upper_blue"), nt_utils.get_number("rear_upper_green"), nt_utils.get_number("rear_upper_red")])
+			except:
+				lowerThreshold = self.lower
+				upperThreshold = self.upper
 
-					area1 = w1 * h1
-					area2 = w2 * h2
-					totalArea = area1 + area2
-					if (totalArea > self.min_area) and (totalArea < self.max_area):
-						if verbose:
-							print("[Blob] x: %d, y: %d, width: %d, height: %d, total area: %d" % (x1, y1, w1, h1, totalArea))
+		if im is not None:
+			im = cv2.resize(im, (600, 480), 0, 0)
 
-						offset_x, offset_y = cv_utils.process_image(im, x1, y1, w1, h1, x2, y2, w2, h2)
+			try:
+				blob, im_mask = cv_utils.get_blob(im, lowerThreshold, upperThreshold)
 
-						nt_utils.put_number("offset_x", offset_x)
-						nt_utils.put_number("offset_y", offset_y)
-						nt_utils.put_boolean("blob_found", True)
-						nt_utils.put_number("blob1_size", w1 * h1)
-						nt_utils.put_number("blob2_size", w2 * h2)
-					else:
-						nt_utils.put_boolean("blob_found", False)
+			except TypeError:
+				blob, im_mask = cv_utils.get_blob(im, self.lower, self.upper)
 
-					if self.display:
-						# Draw image details
-						im = cv_utils.draw_images(im, x1, y1, w1, h1, True)
-						im = cv_utils.draw_images(im, x2, y2, w2, h2, False)
+			if blob is not None:
+				x1, y1, w1, h1 = cv2.boundingRect(blob[0])
+				x2, y2, w2, h2 = cv2.boundingRect(blob[1])
 
-						# Show the images
-						cv2.imshow("Original", im)
-						cv2.imshow("Mask", im_mask)
+				area1 = w1 * h1
+				area2 = w2 * h2
+				totalArea = area1 + area2
+				if (totalArea > self.min_area) and (totalArea < self.max_area):
+					if verbose:
+						print("[Blob] x: %d, y: %d, width: %d, height: %d, total area: %d" % (x1, y1, w1, h1, totalArea))
+
+					offset_x, offset_y = cv_utils.process_image(im, x1, y1, w1, h1, x2, y2, w2, h2)
+
+					nt_utils.put_number("offset_x", offset_x)
+					nt_utils.put_number("offset_y", offset_y)
+					nt_utils.put_boolean("blob_found", True)
+					nt_utils.put_number("blob1_size", w1 * h1)
+					nt_utils.put_number("blob2_size", w2 * h2)
 				else:
 					nt_utils.put_boolean("blob_found", False)
 
-					if verbose:
-						print("No largest blob was found")
+				if self.display or self.stream:
+					# Draw image details
+					im = cv_utils.draw_images(im, x1, y1, w1, h1, True)
+					im = cv_utils.draw_images(im, x2, y2, w2, h2, False)
 
-					if self.display:
-						cv2.imshow("Original", im)
+				if self.dislay:
+					# Show the images
+					cv2.imshow("Original", im)
+					cv2.imshow("Mask", im_mask)
 
-				if cv2.waitKey(1) & 0xFF == ord("q"):
-					break
+				if self.stream:
+					self.picture = im
+
 			else:
-				if (timeout == 0):
-					print("No camera detected")
+				nt_utils.put_boolean("blob_found", False)
 
-				timeout += 1
+				if verbose:
+					print("No largest blob was found")
 
-				if (timeout > 500):
-					print("Camera search timed out")
-					break
+				if self.display:
+					cv2.imshow("Original", im)
+
+				if self.stream:
+					self.picture = im
+
+			if cv2.waitKey(1) & 0xFF == ord("q"):
+				return
+		else:
+			if (timeout == 0):
+				print("No camera detected")
+
+			timeout += 1
+
+			if (timeout > 500):
+				print("Camera search timed out")
+				return
 
 		cv2.destroyAllWindows()
