@@ -12,13 +12,19 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/cameraBack')
-def camera_back():
-    return 'Hello, World!'
+@app.route('/camerafront')
+def camera_front():
+    return render_template('camerafront.html')
+
+
+@app.route('/camerarear')
+def camera_rear():
+    return render_template('camerarear.html')
 
 
 def gen(camera):
     camera.run()
+    camera.get_frame()
 
     while True:
         camera.get_frame()

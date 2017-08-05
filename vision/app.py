@@ -95,6 +95,8 @@ class Vision:
 			while True:
 				self.get_frame()
 
+			cv2.destroyAllWindows()
+
 	def get_frame(self):
 		if nt_utils.get_boolean("shutdown"):
 			os.system("shutdown -H now")
@@ -184,5 +186,3 @@ class Vision:
 			if (timeout > 500):
 				print("Camera search timed out")
 				return
-
-		cv2.destroyAllWindows()
