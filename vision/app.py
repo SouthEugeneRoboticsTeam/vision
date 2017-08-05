@@ -58,7 +58,10 @@ class Vision:
 
 				im_rect = cv_utils.draw_images(im, x1, y1, w1, h1, False)
 
-				offset_x, offset_y = cv_utils.process_image(im, x1 * x2 / 2, y1 * y2 / 2, w1 * w2 / 2, h1 * h2 / 2)
+				cv2.imshow('Image', im_rect)
+				cv2.waitKey(0)
+
+				offset_x, offset_y = cv_utils.process_image(im, x1, y1, w1, h1, x2, y2, w2, h2)
 
 				print(offset_x)
 				print(offset_y)
