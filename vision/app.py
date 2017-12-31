@@ -101,7 +101,7 @@ class Vision:
 				except:
 					lowerThreshold = self.lower
 					upperThreshold = self.upper
-				print upperThreshold, lowerThreshold
+				print(upperThreshold, lowerThreshold)
 			else:
 				im = cameraRear.read()
 				try:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
 
-import utils
+from . import utils
 
 args = utils.get_args()
