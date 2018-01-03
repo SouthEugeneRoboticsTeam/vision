@@ -27,7 +27,7 @@ def put_number(key, value):
 		elif verbose:
 			print("[NetworkTable] not connected")
 	except:
-		print "NetworkTable error putting number"
+		print("NetworkTable error putting number")
 
 
 def put_boolean(key, value):
@@ -37,7 +37,7 @@ def put_boolean(key, value):
 		elif verbose:
 			print("[NetworkTable] not connected")
 	except:
-		print "NetworkTable error putting boolean"
+		print("NetworkTable error putting boolean")
 
 
 def get_boolean(key):
@@ -48,7 +48,7 @@ def get_boolean(key):
 			print("[NetworkTable] not connected")
 	except:
 		return False
-		print "NetworkTable error getting boolean"
+		print("NetworkTable error getting boolean")
 
 
 def get_number(key):
@@ -59,4 +59,4 @@ def get_number(key):
 			print("[NetworkTable] not connected")
 	except:
 		return 0
-		print "NetworkTable error getting number"
+		print("NetworkTable error getting number")
