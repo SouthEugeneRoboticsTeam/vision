@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Camera
+{% endblock %}
+
+{% block content %}
+    <div>
+        <h1>Camera</h1>
+        <h2><a href="{{ url_for('camera_mask') }}">Camera Mask</a></h2>
+    </div>
+    <img src="{{ url_for('video_feed') }}">
+{% endblock %}
