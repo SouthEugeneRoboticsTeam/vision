@@ -27,7 +27,7 @@ class Vision:
 
         self.verbose = self.args["verbose"]
 
-        self.source = self.args["sources"]
+        self.source = self.args["source"]
 
         if self.verbose:
             print(self.args)
@@ -80,7 +80,7 @@ class Vision:
             cv2.destroyAllWindows()
 
     def run_video(self):
-        camera = WebcamVideoStream(src=self.source[0]).start()
+        camera = WebcamVideoStream(src=self.source).start()
 
         if self.verbose:
             print("No image path specified, reading from camera video feed")
