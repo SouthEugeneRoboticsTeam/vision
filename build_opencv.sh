@@ -4,15 +4,14 @@ then
 	cd opencv;
 	git init;
 	git remote add origin https://github.com/Itseez/opencv.git;
-	git fetch origin tags/3.4.0;
-	git checkout tags/3.4.0;
+	git fetch origin 2.4;
+	git checkout origin/2.4;
 else
 	# No OpenCV cache – clone and make the files
 	rm -r opencv;
 	git clone https://github.com/Itseez/opencv.git;
 	cd opencv;
-	git fetch origin tags/3.4.0;
-	git checkout tags/3.4.0;
+	git checkout 2.4;
 	mkdir build;
 	cd build;
 	cmake -DCMAKE_INSTALL_PREFIX=/usr ..;
