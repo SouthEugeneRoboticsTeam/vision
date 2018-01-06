@@ -80,8 +80,7 @@ class Vision:
 			cv2.destroyAllWindows()
 
 	def run_video(self):
-		cameraFront = WebcamVideoStream(src=self.source[1]).start()
-		cameraRear = WebcamVideoStream(src=self.source[0]).start()
+		camera = WebcamVideoStream(src=self.source[0]).start()
 
 		if self.verbose:
 			print("No image path specified, reading from camera video feed")
@@ -92,24 +91,14 @@ class Vision:
 			if nt_utils.get_boolean("shutdown"):
 				os.system("shutdown -H now")
 				return
-
-			if nt_utils.get_boolean("front_camera"):
-				im = cameraFront.read()
-				try:
-					lowerThreshold = np.array([nt_utils.get_number("front_lower_blue"), nt_utils.get_number("front_lower_green"), nt_utils.get_number("front_lower_red")])
-					upperThreshold = np.array([nt_utils.get_number("front_upper_blue"), nt_utils.get_number("front_upper_green"), nt_utils.get_number("front_upper_red")])
-				except:
-					lowerThreshold = self.lower
-					upperThreshold = self.upper
-				print(upperThreshold, lowerThreshold)
-			else:
-				im = cameraRear.read()
-				try:
-					lowerThreshold = np.array([nt_utils.get_number("rear_lower_blue"), nt_utils.get_number("rear_lower_green"), nt_utils.get_number("rear_lower_red")])
-					upperThreshold = np.array([nt_utils.get_number("rear_upper_blue"), nt_utils.get_number("rear_upper_green"), nt_utils.get_number("rear_upper_red")])
-				except:
-					lowerThreshold = self.lower
-					upperThreshold = self.upper
+			im = camera.read()
+			try:
+				lowerThreshold = np.array([nt_utils.get_number("front_lower_blue"), nt_utils.get_number("front_lower_green"), nt_utils.get_number("front_lower_red")])
+				upperThreshold = np.array([nt_utils.get_number("front_upper_blue"), nt_utils.get_number("front_upper_green"), nt_utils.get_number("front_upper_red")])
+			except:
+				lowerThreshold = self.lower
+				upperThreshold = self.upper
+			print(upperThreshold, lowerThreshold)
 
 			if im is not None:
 				im = cv2.resize(im, (600, 480), 0, 0)
