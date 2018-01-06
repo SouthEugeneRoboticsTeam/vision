@@ -15,6 +15,6 @@ else
 	git checkout tags/3.4.0;
 	mkdir build;
 	cd build;
-	cmake -D CMAKE_INSTALL_PREFIX=/usr ..;
+	cmake -DCMAKE_INSTALL_PREFIX=/usr ..;
 	make -j8;
 fi
