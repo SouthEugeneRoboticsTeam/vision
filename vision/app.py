@@ -92,7 +92,7 @@ class Vision:
                 os.system("shutdown -H now")
                 return
 
-            im = cameraFront.read()
+            im = camera.read()
             try:
                 lowerThreshold = np.array([nt_utils.get_number("front_lower_blue"), nt_utils.get_number("front_lower_green"), nt_utils.get_number("front_lower_red")])
                 upperThreshold = np.array([nt_utils.get_number("front_upper_blue"), nt_utils.get_number("front_upper_green"), nt_utils.get_number("front_upper_red")])
