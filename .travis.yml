@@ -1,5 +1,5 @@
 language: python
-python: 3.4
+python: 2.7
 cache:
   pip: true
   directories:
@@ -7,17 +7,14 @@ cache:
 install:
   - sudo apt-get install python3.4-dev python-numpy
   - pip install flake8
-  - pip install coala-bears
   - pip install -r requirements.txt
 before_script:
   - bash build_opencv.sh
   - cd opencv/build/
   - sudo make install
   - cd ../../
-  - export PYTHONPATH=$PYTHONPATH:/usr/lib/python3.4/site-packages/
-  - ls /usr/lib/python3.4/site-packages/
+  - export PYTHONPATH=$PYTHONPATH:/usr/lib/python2.7/site-packages/
 script:
-  - coala --ci
   - flake8 --statistics --show-source --disable-noqa
   - python run.py -i tests/images/goal2016.png
   - python run.py -i tests/images/goal2017.png
