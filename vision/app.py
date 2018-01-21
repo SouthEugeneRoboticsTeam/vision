@@ -90,7 +90,6 @@ class Vision:
         timeout = 0
         fourcc = cv2.VideoWriter_fourcc(*"XVID")
         if self.output_file:
-            print(camera.stream.get(3), camera.stream.get(4))
             videoWrite = cv2.VideoWriter(self.output_file, fourcc, 30.0,
                                          (600, 480))  # For clarification, the 30.0 argument specifies FPS
         while True:
@@ -127,7 +126,7 @@ class Vision:
                     if (totalArea > self.min_area) and (totalArea < self.max_area):
                         if verbose:
                             print("[Blob] x: %d, y: %d, width: %d, height: %d, total area: %d" % (
-                            x1, y1, w1, h1, totalArea))
+                                x1, y1, w1, h1, totalArea))
 
                         offset_x, offset_y = cv_utils.process_image(im, x1, y1, w1, h1, x2, y2, w2, h2)
 
@@ -157,7 +156,6 @@ class Vision:
                         cv2.imshow("Original", im)
                 # Write to video file
                 if self.output_file:
-                    print(im.shape[0],im.shape[1])
                     videoWrite.write(im)
                 if cv2.waitKey(1) & 0xFF == ord("q"):
                     break
