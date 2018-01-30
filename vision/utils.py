@@ -22,5 +22,6 @@ def get_args():
     parser.add_argument("-lt", "--lower-color", action="append", nargs="+", type=int, help="lower color threshold for BGR values")
     parser.add_argument("-ut", "--upper-color", action="append", nargs="+", type=int, help="upper color threshold for BGR values")
     parser.add_argument("-v", "--verbose", action="store_true", help="for debugging, prints useful values")
+    parser.add_argument("-o", "--output", type=str, help="path to video file to write out to")
 
     return vars(parser.parse_args())

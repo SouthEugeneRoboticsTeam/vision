@@ -29,6 +29,8 @@ class Vision:
 
         self.source = self.args["source"]
 
+        self.output_file = self.args["output"]
+
         if self.verbose:
             print(self.args)
 
@@ -87,6 +89,10 @@ class Vision:
 
         timeout = 0
 
+        fourcc = cv2.VideoWriter_fourcc(*"XVID")
+        if self.output_file:
+            videoWrite = cv2.VideoWriter(self.output_file, fourcc, 30.0,
+                                         (600, 480))  # For clarification, the 30.0 argument specifies FPS
         while True:
             if nt_utils.get_boolean("shutdown"):
                 os.system("shutdown -H now")
@@ -144,6 +150,10 @@ class Vision:
 
                     if self.display:
                         cv2.imshow("Original", im)
+
+                # Write to video file
+                if self.output_file:
+                    videoWrite.write(im)
 
                 if cv2.waitKey(1) & 0xFF == ord("q"):
                     break
