@@ -150,6 +150,7 @@ class Vision:
 
                     if self.display:
                         cv2.imshow("Original", im)
+                        
                 # Write to video file
                 if self.output_file:
                     videoWrite.write(im)
