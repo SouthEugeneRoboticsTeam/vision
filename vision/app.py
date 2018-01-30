@@ -88,6 +88,7 @@ class Vision:
             print("No image path specified, reading from camera video feed")
 
         timeout = 0
+
         fourcc = cv2.VideoWriter_fourcc(*"XVID")
         if self.output_file:
             videoWrite = cv2.VideoWriter(self.output_file, fourcc, 30.0,
@@ -99,12 +100,8 @@ class Vision:
 
             im = camera.read()
             try:
-                lowerThreshold = np.array(
-                    [nt_utils.get_number("front_lower_blue"), nt_utils.get_number("front_lower_green"),
-                     nt_utils.get_number("front_lower_red")])
-                upperThreshold = np.array(
-                    [nt_utils.get_number("front_upper_blue"), nt_utils.get_number("front_upper_green"),
-                     nt_utils.get_number("front_upper_red")])
+                lowerThreshold = np.array([nt_utils.get_number("front_lower_blue"), nt_utils.get_number("front_lower_green"), nt_utils.get_number("front_lower_red")])
+                upperThreshold = np.array([nt_utils.get_number("front_upper_blue"), nt_utils.get_number("front_upper_green"), nt_utils.get_number("front_upper_red")])
             except:
                 lowerThreshold = self.lower
                 upperThreshold = self.upper
@@ -125,8 +122,7 @@ class Vision:
                     totalArea = area1 + area2
                     if (totalArea > self.min_area) and (totalArea < self.max_area):
                         if verbose:
-                            print("[Blob] x: %d, y: %d, width: %d, height: %d, total area: %d" % (
-                                x1, y1, w1, h1, totalArea))
+                            print("[Blob] x: %d, y: %d, width: %d, height: %d, total area: %d" % (x1, y1, w1, h1, totalArea))
 
                         offset_x, offset_y = cv_utils.process_image(im, x1, y1, w1, h1, x2, y2, w2, h2)
 
@@ -157,6 +153,7 @@ class Vision:
                 # Write to video file
                 if self.output_file:
                     videoWrite.write(im)
+
                 if cv2.waitKey(1) & 0xFF == ord("q"):
                     break
             else:
