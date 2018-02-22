@@ -92,7 +92,7 @@ class Vision:
         fourcc = cv2.VideoWriter_fourcc(*"XVID")
         if self.output_file:
             videoWrite = cv2.VideoWriter(self.output_file, fourcc, 30.0,
-                                         (600, 480))  # For clarification, the 30.0 argument specifies FPS
+                                         (640, 480))  # For clarification, the 30.0 argument specifies FPS
         while True:
             if nt_utils.get_boolean("shutdown"):
                 os.system("shutdown -H now")
@@ -108,7 +108,7 @@ class Vision:
             print(upperThreshold, lowerThreshold)
 
             if im is not None:
-                im = cv2.resize(im, (600, 480), 0, 0)
+                im = cv2.resize(im, (640, 480), 0, 0)
                 try:
                     blob, im_mask = cv_utils.get_blob(im, lowerThreshold, upperThreshold)
                 except TypeError:
