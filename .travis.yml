@@ -6,6 +6,7 @@ cache:
   pip: true
   directories:
     - opencv/
+    - opencv_contrib/
 before_install:
   - sudo apt-get update
 install:
