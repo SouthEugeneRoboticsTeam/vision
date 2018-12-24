@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
-import cv2
-import time
 import os
+import time
+
+import cv2
 import numpy as np
-import vision.cv_utils as cv_utils
-from vision.network_utils import Network
 from imutils.video import WebcamVideoStream
+
+import vision.cv_utils as cv_utils
+from vision.network_utils import put
 from . import args
 
 
@@ -32,8 +34,6 @@ class Vision:
 
         self.kill_received = False
 
-        self.network = Network()
-
         if self.verbose:
             print(self.args)
 
@@ -55,10 +55,10 @@ class Vision:
 
                 offset_x, offset_y, distance = cv_utils.process_image(im, x1, y1, w1, h1)
 
-                self.network.send({"found": True,
-                                   "distance": distance,
-                                   "xOffset": offset_x,
-                                   "yOffset": offset_y})
+                put("found", True)
+                put("distance", distance)
+                put("xOffset", offset_x)
+                put("yOffset", offset_y)
 
                 if self.display:
                     # Draw image details
@@ -66,9 +66,9 @@ class Vision:
 
                     return im
             else:
-                self.network.send_new({"found": False})
+                put("found", False)
         else:
-            self.network.send_new({"found": False})
+            put("found", False)
 
         return im
 
@@ -134,8 +134,6 @@ class Vision:
 
                 if cube_blobs is not None and self.display and cube_blobs is not None:
                     cv2.imshow("Cube", cube_mask)
-                elif self.verbose:
-                    print("No largest blob found")
 
                 if self.display:
                     cv2.imshow("Original", cv2.cvtColor(im, cv2.COLOR_HSV2BGR))

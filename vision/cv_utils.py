@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
-import cv2
 import math
+
+import cv2
+
 from . import args
 
 verbose = args["verbose"]

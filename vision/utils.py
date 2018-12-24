@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-import configargparse
 import os
 import sys
+
+import configargparse
 
 
 def get_args():
@@ -16,8 +17,7 @@ def get_args():
     parser.add_argument("-i", "--image", help="path to image")
     parser.add_argument("-s", "--source", type=int, default=0, help="video source (default=0)")
     parser.add_argument("-d", "--display", action="store_true", help="display results of processing in a new window")
-    parser.add_argument("-ip", "--roborio-ip", help="the ip address of the roboRIO")
-    parser.add_argument("-p", "--roborio-port", help="the port of the roboRIO's UDP server")
+    parser.add_argument("-t", "--team", type=int, help="the team of the target roboRIO")
     parser.add_argument("-ma", "--min-area", type=int, help="minimum area for blobs")
     parser.add_argument("-mx", "--max-area", type=int, help="maximum area for blobs")
     parser.add_argument("-hf", "--horizontal-fov", type=float, help="horizontal fov of camera")
@@ -26,7 +26,7 @@ def get_args():
     parser.add_argument("-th", "--target-height", type=float, help="height 1m away")
     parser.add_argument("-l", "--lower-color", action="append", nargs="+", type=int, help="lower color threshold in HSV")
     parser.add_argument("-u", "--upper-color", action="append", nargs="+", type=int, help="upper color threshold in HSV")
-    parser.add_argument("-t", "--tuning", action="store_true", help="open in tuning mode")
+    parser.add_argument("-tn", "--tuning", action="store_true", help="open in tuning mode")
     parser.add_argument("-v", "--verbose", action="store_true", help="for debugging, prints useful values")
 
     return vars(parser.parse_args())
