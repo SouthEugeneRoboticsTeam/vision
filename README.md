@@ -25,10 +25,11 @@ $ python run.py
 Full usage:
 
 ```text
-usage: run.py [-h] [-i IMAGE] [-s SOURCE] [-d] [-ip ROBORIO_IP]
-              [-p ROBORIO_PORT] [-ma MIN_AREA] [-mx MAX_AREA]
-              [-l LOWER_COLOR [LOWER_COLOR ...]]
-              [-u UPPER_COLOR [UPPER_COLOR ...]] [-t] [-v]
+usage: run.py [-h] [-i IMAGE] [-s SOURCE] [-d] [-t TEAM] [-na MIN_AREA]
+              [-xa MAX_AREA] [-nf MIN_FULL] [-xf MAX_FULL]
+              [-hf HORIZONTAL_FOV] [-vf VERTICAL_FOV] [-tw TARGET_WIDTH]
+              [-th TARGET_HEIGHT] [-l LOWER_COLOR [LOWER_COLOR ...]]
+              [-u UPPER_COLOR [UPPER_COLOR ...]] [-tn] [-v]
 ```
 
 ## Configuration
@@ -46,19 +47,28 @@ argument may be edited using the `lower-rgb` line in the `config.ini`.
   -s SOURCE, --source SOURCE
                         video source (default=0)
   -d, --display         display results of processing in a new window
-  -ip ROBORIO_IP, --roborio-ip ROBORIO_IP
-                        the ip address of the roboRIO
-  -p ROBORIO_PORT, --roborio-port ROBORIO_PORT
-                        the port of the roboRIO's UDP server
-  -ma MIN_AREA, --min-area MIN_AREA
+  -t TEAM, --team TEAM  the team of the target roboRIO
+  -na MIN_AREA, --min-area MIN_AREA
                         minimum area for blobs
-  -mx MAX_AREA, --max-area MAX_AREA
+  -xa MAX_AREA, --max-area MAX_AREA
                         maximum area for blobs
+  -nf MIN_FULL, --min-full MIN_FULL
+                        minimum fullness of blobs
+  -xf MAX_FULL, --max-full MAX_FULL
+                        maximum fullness of blobs
+  -hf HORIZONTAL_FOV, --horizontal-fov HORIZONTAL_FOV
+                        horizontal fov of camera
+  -vf VERTICAL_FOV, --vertical-fov VERTICAL_FOV
+                        vertical fov of camera
+  -tw TARGET_WIDTH, --target-width TARGET_WIDTH
+                        width 1m away
+  -th TARGET_HEIGHT, --target-height TARGET_HEIGHT
+                        height 1m away
   -l LOWER_COLOR [LOWER_COLOR ...], --lower-color LOWER_COLOR [LOWER_COLOR ...]
                         lower color threshold in HSV
   -u UPPER_COLOR [UPPER_COLOR ...], --upper-color UPPER_COLOR [UPPER_COLOR ...]
                         upper color threshold in HSV
-  -t, --tuning          open in tuning mode
+  -tn, --tuning         open in tuning mode
   -v, --verbose         for debugging, prints useful values
 ```
 

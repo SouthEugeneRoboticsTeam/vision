@@ -13,13 +13,13 @@ target_width = args["target_width"]
 target_height = args["target_height"]
 
 
-def process_image(im, x1, y1, w1, h1):
+def process_image(im, x, y, w, h):
     # Get image height and width
     height, width = im.shape[:2]
 
     # Find center of goal
-    center_x = int(x1 + (x1 + w1)) / 2
-    center_y = int(y1 + (y1 + h1)) / 2
+    center_x = int(x + (x + w)) / 2
+    center_y = int(y + (y + h)) / 2
 
     if verbose:
         print("[Goal] center: (%d, %d)" % (center_x, center_y))
@@ -35,8 +35,8 @@ def process_image(im, x1, y1, w1, h1):
     # Calculate distance from target using width and height, and take average
     width_value = math.tan(math.radians(width / (horizontal_fov * 2.0)))
     height_value = math.tan(math.radians(height / (vertical_fov * 2.0)))
-    dist_width = (w1 / (target_width * 2.0 * width_value)) ** -1
-    dist_height = (h1 / (target_height * 2.0 * height_value)) ** -1
+    dist_width = (w / (target_width * 2.0 * width_value)) ** -1
+    dist_height = (h / (target_height * 2.0 * height_value)) ** -1
 
     dist_avg = (dist_width + dist_height) / 2.0
 
@@ -122,3 +122,10 @@ def draw_offset(im, offset_x, offset_y, point, size, color):
     font = cv2.FONT_HERSHEY_SIMPLEX
     offset_string = "(" + str(offset_x) + ", " + str(offset_y) + ")"
     cv2.putText(im, offset_string, point, font, size, color)
+
+
+def get_percent_full(mask, x, y, w, h):
+    cropped = mask[y:y + h, x:x + w]
+    non_zero = cv2.countNonZero(cropped)
+    total = cropped.shape[0] * cropped.shape[1]
+    return float(non_zero) / float(total)

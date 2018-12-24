@@ -22,6 +22,9 @@ class Vision:
         self.min_area = int(self.args["min_area"])
         self.max_area = int(self.args["max_area"])
 
+        self.min_full = float(self.args["min_full"])
+        self.max_full = float(self.args["max_full"])
+
         self.image = self.args["image"]
 
         self.display = self.args["display"]
@@ -43,30 +46,38 @@ class Vision:
         else:
             self.run_video()
 
-    def do_image(self, im, blobs):
-        if blobs is not None:
-            x1, y1, w1, h1 = cv2.boundingRect(blobs[0])
+    def do_image(self, im, blobs, mask):
+        found_blob = False
 
-            area = w1 * h1
-            if (area > self.min_area) and (area < self.max_area):
-                if self.verbose:
-                    print("[Goal] x: %d, y: %d, w: %d, h: %d, total "
-                          "area: %d" % (x1, y1, w1, h1, area))
+        if blobs is None:
+            return im
 
-                offset_x, offset_y, distance = cv_utils.process_image(im, x1, y1, w1, h1)
+        for blob in blobs:
+            if blob is not None and mask is not None:
+                x, y, w, h = cv2.boundingRect(blob)
 
-                put("found", True)
-                put("distance", distance)
-                put("xOffset", offset_x)
-                put("yOffset", offset_y)
+                full = cv_utils.get_percent_full(mask, x, y, w, h)
+                area = w * h
 
-                if self.display:
-                    # Draw image details
-                    im = cv_utils.draw_images(im, x1, y1, w1, h1)
+                if area > self.min_area and area < self.max_area and full > self.min_full and full < self.max_full:
+                    if self.verbose:
+                        print("[Goal] x: %d, y: %d, w: %d, h: %d, area: %d, full: %f" % (x, y, w, h, area, full))
 
-                    return im
-            else:
-                put("found", False)
+                    offset_x, offset_y, distance = cv_utils.process_image(im, x, y, w, h)
+
+                    put("distance", distance)
+                    put("xOffset", offset_x)
+                    put("yOffset", offset_y)
+
+                    if self.display:
+                        # Draw image details
+                        im = cv_utils.draw_images(im, x, y, w, h)
+
+                    found_blob = True
+                    break
+
+        if found_blob:
+            put("found", True)
         else:
             put("found", False)
 
@@ -130,7 +141,7 @@ class Vision:
 
                 cube_blobs, cube_mask = cv_utils.get_blob(im, self.lower, self.upper)
 
-                im = self.do_image(im, cube_blobs)
+                im = self.do_image(im, cube_blobs, cube_mask)
 
                 if cube_blobs is not None and self.display and cube_blobs is not None:
                     cv2.imshow("Cube", cube_mask)
