@@ -1,46 +1,55 @@
 #!/usr/bin/env python
 
 import cv2
+import math
 from . import args
 
 verbose = args["verbose"]
+horizontal_fov = args["horizontal_fov"]
+vertical_fov = args["vertical_fov"]
+target_width = args["target_width"]
+target_height = args["target_height"]
 
 
-def process_image(im, x1, y1, w1, h1, x2, y2, w2, h2):
+def process_image(im, x1, y1, w1, h1):
     # Get image height and width
     height, width = im.shape[:2]
 
-    if verbose:
-        print("[Image] width: %d, height: %d" % (width, height))
-
-    offset_x = 0
-    offset_y = 0
-
     # Find center of goal
-    center_x = (int(0.5 * (x1 + (x1 + w1))) + int(0.5 * (x2 + (x2 + w2)))) / 2
-    center_y = (int(0.5 * (y1 + (y1 + h1))) + int(0.5 * (y2 + (y2 + h2)))) / 2
+    center_x = int(x1 + (x1 + w1)) / 2
+    center_y = int(y1 + (y1 + h1)) / 2
 
     if verbose:
         print("[Goal] center: (%d, %d)" % (center_x, center_y))
 
     # Find pixels away from center
-    offset_x = int(width / 2 - center_x) * -1
-    offset_y = int(height / 2 - center_y)
+    offset_x_pixels = width / 2.0 - center_x * -1
+    offset_y_pixels = height / 2.0 - center_y
+
+    # Convert pixels from center to degrees
+    offset_x_degrees = offset_x_pixels / horizontal_fov
+    offset_y_degrees = offset_y_pixels / vertical_fov
+
+    # Calculate distance from target using width and height, and take average
+    width_value = math.tan(math.radians(width / (horizontal_fov * 2.0)))
+    height_value = math.tan(math.radians(height / (vertical_fov * 2.0)))
+    dist_width = (w1 / (target_width * 2.0 * width_value)) ** -1
+    dist_height = (h1 / (target_height * 2.0 * height_value)) ** -1
+
+    dist_avg = (dist_width + dist_height) / 2.0
 
     if verbose:
-        print("[Goal] offset: (%d, %d)" % (offset_x, offset_y))
+        print("[Goal] offset degrees: (%d, %d)" % (offset_x_degrees, offset_y_degrees))
+        print("[Goal] distance: (w: %f, h: %f, avg: %f)" % (dist_width, dist_height, dist_avg))
 
-    return offset_x, offset_y
+    return offset_x_degrees, offset_y_degrees, dist_avg
 
 
-def draw_images(im, x, y, w, h, side):
+def draw_images(im, x, y, w, h):
     # Parameters are image and blob dimensions
 
     # Get image height and width
     height, width = im.shape[:2]
-
-    if verbose:
-        print("[Image] width: %d, height: %d" % (width, height))
 
     # Create before image
     im_rect = im.copy()
@@ -53,23 +62,15 @@ def draw_images(im, x, y, w, h, side):
     center_y = int(0.5 * (y + (y + h)))
 
     if verbose:
+        # Find pixels away from center
+        offset_x = int(width / 2 - center_x) * -1
+        offset_y = int(height / 2 - center_y)
+
         print("[Blob] center: (%d, %d)" % (center_x, center_y))
-
-    # Find pixels away from center
-    offset_x = int(width / 2 - center_x) * -1
-    offset_y = int(height / 2 - center_y)
-
-    if verbose:
         print("[Blob] offset: (%d, %d)" % (offset_x, offset_y))
 
     # Draw point on center of goal
     cv2.circle(im_rect, (center_x, center_y), 2, (255, 0, 0), thickness=3)
-
-    # Put text on screen
-    if side is True:
-        draw_offset(im_rect, offset_x, offset_y, (0, 30), 1, (255, 255, 255))
-    else:
-        draw_offset(im_rect, offset_x, offset_y, (400, 30), 1, (255, 255, 255))
 
     return im_rect
 
@@ -102,10 +103,8 @@ def get_largest(im, n):
     else:
         contours, _ = cv2.findContours(im.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    # Cycle through contours and add area to array
-    areas = []
-    for c in contours:
-        areas.append(cv2.contourArea(c))
+    # Create array of contour areas
+    areas = [cv2.contourArea(contour) for contour in contours]
 
     # Sort array of areas by size
     sorted_areas = sorted(zip(areas, contours), key=lambda x: x[0], reverse=True)

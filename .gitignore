@@ -1,2 +1,7 @@
+.vscode
+!.vscode/launch.json
+.idea
+settings
+venv
 *.pyc
 *.orig

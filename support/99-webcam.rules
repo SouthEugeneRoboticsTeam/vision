@@ -1,0 +1,1 @@
+SUBSYSTEM=="video4linux", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0779", PROGRAM="/bin/sh /usr/local/bin/config-v4l2.sh /dev/%k"

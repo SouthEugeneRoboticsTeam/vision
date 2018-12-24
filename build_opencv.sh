@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 if [ -n "$(ls -A opencv/build)" ];
 then
     # We're using a cached version of our OpenCV build

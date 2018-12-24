@@ -1,22 +1,21 @@
 #!/usr/bin/env python
 
 import cv2
+import time
+import os
 import numpy as np
 import vision.cv_utils as cv_utils
-import vision.nt_utils as nt_utils
+from vision.network_utils import Network
 from imutils.video import WebcamVideoStream
 from . import args
-import os
-
-verbose = args["verbose"]
 
 
 class Vision:
     def __init__(self):
         self.args = args
 
-        self.lower = np.array(self.args["lower_color"], dtype="uint8")
-        self.upper = np.array(self.args["upper_color"], dtype="uint8")
+        self.lower = np.array(self.args["lower_color"])
+        self.upper = np.array(self.args["upper_color"])
 
         self.min_area = int(self.args["min_area"])
         self.max_area = int(self.args["max_area"])
@@ -29,7 +28,11 @@ class Vision:
 
         self.source = self.args["source"]
 
-        self.output_file = self.args["output"]
+        self.tuning = self.args["tuning"]
+
+        self.kill_received = False
+
+        self.network = Network()
 
         if self.verbose:
             print(self.args)
@@ -40,131 +43,139 @@ class Vision:
         else:
             self.run_video()
 
+    def do_image(self, im, blobs):
+        if blobs is not None:
+            x1, y1, w1, h1 = cv2.boundingRect(blobs[0])
+
+            area = w1 * h1
+            if (area > self.min_area) and (area < self.max_area):
+                if self.verbose:
+                    print("[Goal] x: %d, y: %d, w: %d, h: %d, total "
+                          "area: %d" % (x1, y1, w1, h1, area))
+
+                offset_x, offset_y, distance = cv_utils.process_image(im, x1, y1, w1, h1)
+
+                self.network.send({"found": True,
+                                   "distance": distance,
+                                   "xOffset": offset_x,
+                                   "yOffset": offset_y})
+
+                if self.display:
+                    # Draw image details
+                    im = cv_utils.draw_images(im, x1, y1, w1, h1)
+
+                    return im
+            else:
+                self.network.send_new({"found": False})
+        else:
+            self.network.send_new({"found": False})
+
+        return im
+
     def run_image(self):
         if self.verbose:
             print("Image path specified, reading from %s" % self.image)
 
-        im = cv2.imread(self.image)
+        bgr = cv2.imread(self.image)
+        im = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
 
-        blob, im_mask = cv_utils.get_blob(im, self.lower, self.upper)
-        if blob is not None:
-            x1, y1, w1, h1 = cv2.boundingRect(blob[0])
-            x2, y2, w2, h2 = cv2.boundingRect(blob[1])
+        cube_blobs, cube_mask = cv_utils.get_blob(im, self.lower, self.upper)
 
-            if w1 * h1 > self.min_area and w2 * h2 > self.min_area:
-                if verbose:
-                    print("[Blob 1] x: %d, y: %d, width: %d, height: %d, area: %d" % (x1, y1, w1, h1, w1 * h1))
-                    print("[Blob 2] x: %d, y: %d, width: %d, height: %d, area: %d" % (x2, y2, w2, h2, w2 * h2))
-
-                im_rect = cv_utils.draw_images(im, x1, y1, w1, h1, False)
-
-                offset_x, offset_y = cv_utils.process_image(im, x1 * x2 / 2, y1 * y2 / 2, w1 * w2 / 2, h1 * h2 / 2)
-
-                print(offset_x)
-                print(offset_y)
-
-                nt_utils.put_number("offset_x", offset_x)
-                nt_utils.put_number("offset_y", offset_y)
-        else:
-            if verbose:
-                print("No largest blob was found")
+        im = self.do_image(im, cube_blobs)
 
         if self.display:
             # Show the images
-            if blob is not None:
-                cv2.imshow("Original", im_rect)
-                cv2.imshow("Mask", im_mask)
-            else:
-                cv2.imshow("Original", im)
+            cv2.imshow("Original", cv2.cvtColor(im, cv2.COLOR_HSV2BGR))
+
+            if cube_blobs is not None:
+                cv2.imshow("Cube", cube_mask)
 
             cv2.waitKey(0)
-
             cv2.destroyAllWindows()
 
-    def run_video(self):
-        camera = WebcamVideoStream(src=self.source).start()
+        self.kill_received = True
 
+    def run_video(self):
         if self.verbose:
             print("No image path specified, reading from camera video feed")
 
+        camera = WebcamVideoStream(src=self.source).start()
+
         timeout = 0
 
-        fourcc = cv2.VideoWriter_fourcc(*"XVID")
-        if self.output_file:
-            videoWrite = cv2.VideoWriter(self.output_file, fourcc, 30.0,
-                                         (640, 480))  # For clarification, the 30.0 argument specifies FPS
-        while True:
-            if nt_utils.get_boolean("shutdown"):
-                os.system("shutdown -H now")
-                return
+        if self.tuning:
+            cv2.namedWindow("Settings")
+            cv2.resizeWindow("Settings", 700, 350)
 
-            im = camera.read()
-            try:
-                lowerThreshold = np.array([nt_utils.get_number("front_lower_blue"), nt_utils.get_number("front_lower_green"), nt_utils.get_number("front_lower_red")])
-                upperThreshold = np.array([nt_utils.get_number("front_upper_blue"), nt_utils.get_number("front_upper_green"), nt_utils.get_number("front_upper_red")])
-            except:
-                lowerThreshold = self.lower
-                upperThreshold = self.upper
-            print(upperThreshold, lowerThreshold)
+            cv2.createTrackbar("Lower H", "Settings", self.lower[0], 255,
+                               lambda val: self.update_setting(True, 0, val))
+            cv2.createTrackbar("Lower S", "Settings", self.lower[1], 255,
+                               lambda val: self.update_setting(True, 1, val))
+            cv2.createTrackbar("Lower V", "Settings", self.lower[2], 255,
+                               lambda val: self.update_setting(True, 2, val))
 
-            if im is not None:
+            cv2.createTrackbar("Upper H", "Settings", self.upper[0], 255,
+                               lambda val: self.update_setting(False, 0, val))
+            cv2.createTrackbar("Upper S", "Settings", self.upper[1], 255,
+                               lambda val: self.update_setting(False, 1, val))
+            cv2.createTrackbar("Upper V", "Settings", self.upper[2], 255,
+                               lambda val: self.update_setting(False, 2, val))
+
+        while not self.kill_received:
+            bgr = camera.read()
+
+            if bgr is not None:
+                im = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
                 im = cv2.resize(im, (640, 480), 0, 0)
-                try:
-                    blob, im_mask = cv_utils.get_blob(im, lowerThreshold, upperThreshold)
-                except TypeError:
-                    blob, im_mask = cv_utils.get_blob(im, self.lower, self.upper)
-                if blob is not None:
-                    x1, y1, w1, h1 = cv2.boundingRect(blob[0])
-                    x2, y2, w2, h2 = cv2.boundingRect(blob[1])
 
-                    area1 = w1 * h1
-                    area2 = w2 * h2
-                    totalArea = area1 + area2
-                    if (totalArea > self.min_area) and (totalArea < self.max_area):
-                        if verbose:
-                            print("[Blob] x: %d, y: %d, width: %d, height: %d, total area: %d" % (x1, y1, w1, h1, totalArea))
+                cube_blobs, cube_mask = cv_utils.get_blob(im, self.lower, self.upper)
 
-                        offset_x, offset_y = cv_utils.process_image(im, x1, y1, w1, h1, x2, y2, w2, h2)
+                im = self.do_image(im, cube_blobs)
 
-                        nt_utils.put_number("offset_x", offset_x)
-                        nt_utils.put_number("offset_y", offset_y)
-                        nt_utils.put_boolean("blob_found", True)
-                        nt_utils.put_number("blob1_size", w1 * h1)
-                        nt_utils.put_number("blob2_size", w2 * h2)
-                    else:
-                        nt_utils.put_boolean("blob_found", False)
+                if cube_blobs is not None and self.display and cube_blobs is not None:
+                    cv2.imshow("Cube", cube_mask)
+                elif self.verbose:
+                    print("No largest blob found")
 
-                    if self.display:
-                        # Draw image details
-                        im = cv_utils.draw_images(im, x1, y1, w1, h1, True)
-                        im = cv_utils.draw_images(im, x2, y2, w2, h2, False)
-
-                        # Show the images
-                        cv2.imshow("Original", im)
-                        cv2.imshow("Mask", im_mask)
-                else:
-                    nt_utils.put_boolean("blob_found", False)
-
-                    if verbose:
-                        print("No largest blob was found")
-
-                    if self.display:
-                        cv2.imshow("Original", im)
-
-                # Write to video file
-                if self.output_file:
-                    videoWrite.write(im)
+                if self.display:
+                    cv2.imshow("Original", cv2.cvtColor(im, cv2.COLOR_HSV2BGR))
 
                 if cv2.waitKey(1) & 0xFF == ord("q"):
+                    self.kill_received = True
                     break
             else:
-                if (timeout == 0):
-                    print("No camera detected")
+                if timeout == 0:
+                    print("No camera detected... Retrying...")
 
                 timeout += 1
 
-                if (timeout > 500):
-                    print("Camera search timed out")
+                if timeout > 5000:
+                    print("Camera search timed out!")
                     break
 
+        if self.tuning:
+            setting_names = ["Lower H", "Lower S", "Lower V", "Upper H", "Upper S", "Upper V"]
+
+            if not os.path.exists("settings"):
+                os.makedirs("settings")
+
+            with open("settings/save-{}.thr".format(round(time.time() * 1000)), "w") as thresh_file:
+                values = enumerate(self.lower.tolist() + self.upper.tolist())
+                thresh_file.writelines(["{}: {}\n".format(setting_names[num], value[0])
+                                        for num, value in values])
+
+        camera.stop()
         cv2.destroyAllWindows()
+
+    def update_setting(self, lower, index, value):
+        if lower:
+            self.lower[index] = value
+        else:
+            self.upper[index] = value
+
+    def stop(self):
+        self.kill_received = True
+
+    @property
+    def stopped(self):
+        return self.kill_received
