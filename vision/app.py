@@ -90,16 +90,16 @@ class Vision:
         bgr = cv2.imread(self.image)
         im = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
 
-        cube_blobs, cube_mask = cv_utils.get_blob(im, self.lower, self.upper)
+        blobs, mask = cv_utils.get_blob(im, self.lower, self.upper)
 
-        im = self.do_image(im, cube_blobs)
+        im = self.do_image(im, blobs, mask)
 
         if self.display:
             # Show the images
             cv2.imshow("Original", cv2.cvtColor(im, cv2.COLOR_HSV2BGR))
 
-            if cube_blobs is not None:
-                cv2.imshow("Cube", cube_mask)
+            if blobs is not None:
+                cv2.imshow("Mask", mask)
 
             cv2.waitKey(0)
             cv2.destroyAllWindows()
@@ -139,12 +139,12 @@ class Vision:
                 im = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
                 im = cv2.resize(im, (640, 480), 0, 0)
 
-                cube_blobs, cube_mask = cv_utils.get_blob(im, self.lower, self.upper)
+                blobs, mask = cv_utils.get_blob(im, self.lower, self.upper)
 
-                im = self.do_image(im, cube_blobs, cube_mask)
+                im = self.do_image(im, blobs, mask)
 
-                if cube_blobs is not None and self.display and cube_blobs is not None:
-                    cv2.imshow("Cube", cube_mask)
+                if blobs is not None and self.display:
+                    cv2.imshow("Mask", mask)
 
                 if self.display:
                     cv2.imshow("Original", cv2.cvtColor(im, cv2.COLOR_HSV2BGR))
