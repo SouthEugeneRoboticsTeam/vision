@@ -3,6 +3,8 @@
 import math
 
 import cv2
+import numpy as np
+import imutils
 
 from . import args
 
@@ -13,43 +15,44 @@ target_width = args["target_width"]
 target_height = args["target_height"]
 
 
-def process_image(im, x, y, w, h):
+def process_image(im, rect, goal):
     # Get image height and width
     height, width = im.shape[:2]
 
     # Find center of goal
-    center_x = int(x + (x + w)) / 2
-    center_y = int(y + (y + h)) / 2
+    center_x = rect[0][0]
+    center_y = rect[0][1]
 
     if verbose:
         print("[Goal] center: (%d, %d)" % (center_x, center_y))
 
     # Find pixels away from center
-    offset_x_pixels = width / 2.0 - center_x * -1
+    offset_x_pixels = (width / 2.0 - center_x) * -1
     offset_y_pixels = height / 2.0 - center_y
 
+    offset_x_percent = offset_x_pixels / (width / 2.0)
+    offset_y_percent = offset_y_pixels / (height / 2.0)
+
     # Convert pixels from center to degrees
-    offset_x_degrees = offset_x_pixels / horizontal_fov
-    offset_y_degrees = offset_y_pixels / vertical_fov
+    offset_x_degrees = offset_x_percent * horizontal_fov / 2.0
+    offset_y_degrees = offset_y_percent * vertical_fov / 2.0
 
     # Calculate distance from target using width and height, and take average
     width_value = math.tan(math.radians(width / (horizontal_fov * 2.0)))
     height_value = math.tan(math.radians(height / (vertical_fov * 2.0)))
-    dist_width = (w / (target_width * 2.0 * width_value)) ** -1
-    dist_height = (h / (target_height * 2.0 * height_value)) ** -1
+    dist_width = (goal.shape[0] / (target_width * 2.0 * width_value)) ** -1
+    dist_height = (goal.shape[1] / (target_height * 2.0 * height_value)) ** -1
 
     dist_avg = (dist_width + dist_height) / 2.0
 
     if verbose:
-        print("[Goal] offset degrees: (%d, %d)" % (offset_x_degrees, offset_y_degrees))
+        print("[Goal] offset degrees: (%f, %f)" % (offset_x_degrees, offset_y_degrees))
         print("[Goal] distance: (w: %f, h: %f, avg: %f)" % (dist_width, dist_height, dist_avg))
 
     return offset_x_degrees, offset_y_degrees, dist_avg
 
 
-def draw_images(im, x, y, w, h):
-    # Parameters are image and blob dimensions
-
+def draw_images(im, rect, box):
     # Get image height and width
     height, width = im.shape[:2]
 
@@ -57,11 +60,14 @@ def draw_images(im, x, y, w, h):
     im_rect = im.copy()
 
     # Draw rectangle around goal
-    cv2.rectangle(im_rect, (x, y), (x + w, y + h), (255, 0, 0), 2)
+    cv2.drawContours(im_rect, [box], 0, (255, 0, 0), 2)
 
     # Find center of goal
-    center_x = int(0.5 * (x + (x + w)))
-    center_y = int(0.5 * (y + (y + h)))
+    center_x = int(rect[0][0])
+    center_y = int(rect[0][1])
+
+    # Draw point on center of goal
+    cv2.circle(im_rect, (center_x, center_y), 2, (255, 0, 0), thickness=3)
 
     if verbose:
         # Find pixels away from center
@@ -71,9 +77,6 @@ def draw_images(im, x, y, w, h):
         print("[Blob] center: (%d, %d)" % (center_x, center_y))
         print("[Blob] offset: (%d, %d)" % (offset_x, offset_y))
 
-    # Draw point on center of goal
-    cv2.circle(im_rect, (center_x, center_y), 2, (255, 0, 0), thickness=3)
-
     return im_rect
 
 
@@ -82,28 +85,24 @@ def get_blob(im, lower, upper):
 
     # Create mask of green
     try:
-        green_mask = cv2.inRange(im, lower, upper)
+        mask = cv2.inRange(im, lower, upper)
     except cv2.error:
         # Catches the case where there is no blob in range
         return None, None
 
     # Get largest blob
-    largest = get_largest(green_mask, 1)
-    second_largest = get_largest(green_mask, 2)
+    largest = get_largest(mask, 1)
 
-    if largest is not None and second_largest is not None:
-        return [largest, second_largest], green_mask
+    if largest is not None:
+        return largest, mask
     else:
         return None, None
 
 
 def get_largest(im, n):
     # Find contours of the shape
-    major = cv2.__version__.split('.')[0]
-    if major == '3':
-        _, contours, _ = cv2.findContours(im.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    else:
-        contours, _ = cv2.findContours(im.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours = cv2.findContours(im.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours = imutils.grab_contours(contours)
 
     # Create array of contour areas
     areas = [cv2.contourArea(contour) for contour in contours]
@@ -112,7 +111,7 @@ def get_largest(im, n):
     sorted_areas = sorted(zip(areas, contours), key=lambda x: x[0], reverse=True)
 
     if sorted_areas and len(sorted_areas) >= n:
-        # Find nth largest using data[n-1][1]
+        # Find nth largest
         return sorted_areas[n - 1][1]
     else:
         return None
@@ -124,8 +123,45 @@ def draw_offset(im, offset_x, offset_y, point, size, color):
     cv2.putText(im, offset_string, point, font, size, color)
 
 
-def get_percent_full(mask, x, y, w, h):
-    cropped = mask[y:y + h, x:x + w]
-    non_zero = cv2.countNonZero(cropped)
-    total = cropped.shape[0] * cropped.shape[1]
+def get_percent_full(goal):
+    non_zero = cv2.countNonZero(goal)
+    total = goal.shape[0] * goal.shape[1]
     return float(non_zero) / float(total)
+
+
+def order_points(pts):
+    rect = np.zeros((4, 2), dtype="float32")
+
+    s = pts.sum(axis=1)
+    rect[0] = pts[np.argmin(s)]
+    rect[2] = pts[np.argmax(s)]
+
+    diff = np.diff(pts, axis=1)
+    rect[1] = pts[np.argmin(diff)]
+    rect[3] = pts[np.argmax(diff)]
+
+    return rect
+
+
+def four_point_transform(im, pts):
+    rect = order_points(pts)
+    (tl, tr, br, bl) = pts
+
+    widthA = np.sqrt(((br[0] - bl[0]) ** 2) + ((br[1] - bl[1]) ** 2))
+    widthB = np.sqrt(((tr[0] - tl[0]) ** 2) + ((tr[1] - tl[1]) ** 2))
+    maxWidth = max(int(widthA), int(widthB))
+
+    heightA = np.sqrt(((tr[0] - br[0]) ** 2) + ((tr[1] - br[1]) ** 2))
+    heightB = np.sqrt(((tl[0] - bl[0]) ** 2) + ((tl[1] - bl[1]) ** 2))
+    maxHeight = max(int(heightA), int(heightB))
+
+    dst = np.array([
+        [0, 0],
+        [maxWidth - 1, 0],
+        [maxWidth - 1, maxHeight - 1],
+        [0, maxHeight - 1]], dtype="float32")
+
+    M = cv2.getPerspectiveTransform(rect, dst)
+    warped = cv2.warpPerspective(im, M, (maxWidth, maxHeight))
+
+    return warped
