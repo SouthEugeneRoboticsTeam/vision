@@ -29,6 +29,7 @@ def get_args():
     parser.add_argument("-l", "--lower-color", action="append", nargs="+", type=int, help="lower color threshold in HSV")
     parser.add_argument("-u", "--upper-color", action="append", nargs="+", type=int, help="upper color threshold in HSV")
     parser.add_argument("-tn", "--tuning", action="store_true", help="open in tuning mode")
+    parser.add_argument("-cd", "--calculate-distances", action="store_true", help="calculate distance from goal")
     parser.add_argument("-v", "--verbose", action="store_true", help="for debugging, prints useful values")
 
     return vars(parser.parse_args())

@@ -13,6 +13,7 @@ horizontal_fov = args["horizontal_fov"]
 vertical_fov = args["vertical_fov"]
 target_width = args["target_width"]
 target_height = args["target_height"]
+calculate_distances = args["calculate_distances"]
 
 
 def process_image(im, rect, goal):
@@ -22,9 +23,6 @@ def process_image(im, rect, goal):
     # Find center of goal
     center_x = rect[0][0]
     center_y = rect[0][1]
-
-    if verbose:
-        print("[Goal] center: (%d, %d)" % (center_x, center_y))
 
     # Find pixels away from center
     offset_x_pixels = (width / 2.0 - center_x) * -1
@@ -37,25 +35,28 @@ def process_image(im, rect, goal):
     offset_x_degrees = offset_x_percent * horizontal_fov / 2.0
     offset_y_degrees = offset_y_percent * vertical_fov / 2.0
 
-    # Calculate distance from target using width and height, and take average
-    width_value = math.tan(math.radians(width / (horizontal_fov * 2.0)))
-    height_value = math.tan(math.radians(height / (vertical_fov * 2.0)))
-    dist_width = (goal.shape[0] / (target_width * 2.0 * width_value)) ** -1
-    dist_height = (goal.shape[1] / (target_height * 2.0 * height_value)) ** -1
-
-    dist_avg = (dist_width + dist_height) / 2.0
-
     if verbose:
+        print("[Goal] center: (%d, %d)" % (center_x, center_y))
+        print("[Goal] offset pixels: (%d, %d)" % (offset_x_pixels, offset_y_pixels))
         print("[Goal] offset degrees: (%f, %f)" % (offset_x_degrees, offset_y_degrees))
-        print("[Goal] distance: (w: %f, h: %f, avg: %f)" % (dist_width, dist_height, dist_avg))
+
+    dist_avg = None
+    if calculate_distances:
+        # Calculate distance from target using width and height, and take average
+        width_value = math.tan(math.radians(width / (horizontal_fov * 2.0)))
+        height_value = math.tan(math.radians(height / (vertical_fov * 2.0)))
+        dist_width = (goal.shape[0] / (target_width * 2.0 * width_value)) ** -1
+        dist_height = (goal.shape[1] / (target_height * 2.0 * height_value)) ** -1
+
+        dist_avg = (dist_width + dist_height) / 2.0
+
+        if verbose:
+            print("[Goal] distance: (w: %f, h: %f, avg: %f)" % (dist_width, dist_height, dist_avg))
 
     return offset_x_degrees, offset_y_degrees, dist_avg
 
 
 def draw_images(im, rect, box):
-    # Get image height and width
-    height, width = im.shape[:2]
-
     # Create before image
     im_rect = im.copy()
 
@@ -68,14 +69,6 @@ def draw_images(im, rect, box):
 
     # Draw point on center of goal
     cv2.circle(im_rect, (center_x, center_y), 2, (255, 0, 0), thickness=3)
-
-    if verbose:
-        # Find pixels away from center
-        offset_x = int(width / 2 - center_x) * -1
-        offset_y = int(height / 2 - center_y)
-
-        print("[Blob] center: (%d, %d)" % (center_x, center_y))
-        print("[Blob] offset: (%d, %d)" % (offset_x, offset_y))
 
     return im_rect
 

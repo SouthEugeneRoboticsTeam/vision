@@ -38,8 +38,6 @@ class Vision:
 
         self.tuning = self.args["tuning"]
 
-        self.kill_received = False
-
         if self.verbose:
             print(self.args)
 
@@ -70,9 +68,10 @@ class Vision:
 
                 offset_x, offset_y, distance = cv_utils.process_image(im, rect, goal)
 
-                put("distance", distance)
                 put("xOffset", offset_x)
                 put("yOffset", offset_y)
+                if distance is not None:
+                    put("distance", distance)
 
                 if self.display:
                     # Draw image details
@@ -133,7 +132,7 @@ class Vision:
             cv2.createTrackbar("Upper V", "Settings", self.upper[2], 255,
                                lambda val: self.update_setting(False, 2, val))
 
-        while not self.kill_received:
+        while True:
             bgr = camera.read()
 
             if bgr is not None:
@@ -181,10 +180,3 @@ class Vision:
             self.lower[index] = value
         else:
             self.upper[index] = value
-
-    def stop(self):
-        self.kill_received = True
-
-    @property
-    def stopped(self):
-        return self.kill_received
