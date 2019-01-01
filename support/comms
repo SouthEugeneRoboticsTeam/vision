@@ -8,7 +8,7 @@
 # Description:       Starts communication service on boot.
 ### END INIT INFO
 
-dir="<DIRECTORY>"
+dir="<DIRECTORY>/support"
 cmd="bash comms-led.sh"
 user="<USER>"
 

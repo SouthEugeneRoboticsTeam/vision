@@ -8,4 +8,4 @@ echo "$(date) Running modprobe..."
 modprobe uvcvideo nodrop=1 timeout=6000
 lsusb
 echo "$(date) Starting vision..."
-python run.py
+python3 run.py
