@@ -9,7 +9,7 @@ import numpy as np
 from imutils.video import WebcamVideoStream
 
 import vision.cv_utils as cv_utils
-from vision.network_utils import initConnectionListener, put
+from vision.network_utils import put
 from . import args
 
 
