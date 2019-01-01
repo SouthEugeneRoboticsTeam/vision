@@ -16,8 +16,9 @@ def get_args():
 
     parser.add_argument("-i", "--image", help="path to image")
     parser.add_argument("-s", "--source", type=int, default=0, help="video source (default=0)")
-    parser.add_argument("-d", "--display", action="store_true", help="display results of processing in a new window")
     parser.add_argument("-t", "--team", type=int, help="the team of the target roboRIO")
+    parser.add_argument("-d", "--display", action="store_true", help="display results of processing in a new window")
+    parser.add_argument("-ng", "--no-gui", action="store_true", help="disable the GUI display")
     parser.add_argument("-na", "--min-area", type=int, help="minimum area for blobs")
     parser.add_argument("-xa", "--max-area", type=int, help="maximum area for blobs")
     parser.add_argument("-nf", "--min-full", type=float, help="minimum fullness of blobs")

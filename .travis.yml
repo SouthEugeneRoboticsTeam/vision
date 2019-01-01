@@ -37,5 +37,5 @@ install:
   - pip install flake8
 script:
   - flake8 --statistics --show-source --disable-noqa
-  - python run.py -i tests/images/goal2016.png
-  - python run.py -i tests/images/goal2017.png
+  - python run.py -i tests/images/goal2016.png -ng
+  - python run.py -i tests/images/goal2017.png -ng
