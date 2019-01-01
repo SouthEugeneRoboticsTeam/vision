@@ -7,7 +7,7 @@ from appJar import gui
 from gui import Gui
 from vision.app import Vision
 
-app = gui("Vision")
+app = gui("Vision", handleArgs=False)
 app.setSize(800, 480)
 app.setSize("fullscreen")
 app.setGuiPadding(0, 0)
