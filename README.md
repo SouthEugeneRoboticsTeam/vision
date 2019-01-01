@@ -2,12 +2,12 @@
     <a href="#"><img alt="Logo" src="./images/logo.png" width="67%" /></a>
 </p>
 
-[![Team 2521][team-img]][team-url]
-[![Python 3.6][python-img]][python-url]
-[![License][license-img]][license-url]
-[![Travis][travis-img]][travis-url]
-
-SERT's OpenCV vision code.
+<p align="center">
+    <a href="https://sert2521.org"><img alt="team 2521" src="https://img.shields.io/badge/team-2521-7d26cd.svg?style=flat-square" /></a>
+    <a href="https://www.python.org/downloads"><img alt="team 2521" src="https://img.shields.io/badge/python-3.6-blue.svg?style=flat-square" /></a>
+    <a href="https://github.com/SouthEugeneRoboticsTeam/vision/blob/master/LICENSE"><img alt="team 2521" src="https://img.shields.io/github/license/SouthEugeneRoboticsTeam/vision.svg?style=flat-square" /></a>
+    <a href="https://travis-ci.org/SouthEugeneRoboticsTeam/vision"><img alt="team 2521" src="https://img.shields.io/travis/SouthEugeneRoboticsTeam/vision/master.svg?style=flat-square" /></a>
+</p>
 
 ## Usage
 
@@ -95,14 +95,3 @@ thresholding difficult. This can be done with V4L:
 $ sudo apt-get install v4l-utils
 $ v4l-ctl -d /dev/video0 -c exposure_absolute=50
 ```
-
-<!-- Badge URLs -->
-
-[team-img]:     https://img.shields.io/badge/team-2521-7d26cd.svg?style=flat-square
-[team-url]:     https://sert2521.org
-[python-img]:   https://img.shields.io/badge/python-3.6-blue.svg?style=flat-square
-[python-url]:   https://www.python.org/downloads
-[license-img]:  https://img.shields.io/github/license/SouthEugeneRoboticsTeam/vision.svg?style=flat-square
-[license-url]:  https://github.com/SouthEugeneRoboticsTeam/vision/blob/master/LICENSE
-[travis-img]:   https://img.shields.io/travis/SouthEugeneRoboticsTeam/vision/master.svg?style=flat-square
-[travis-url]:   https://travis-ci.org/SouthEugeneRoboticsTeam/vision
