@@ -32,6 +32,16 @@ usage: run.py [-h] [-i IMAGE] [-s SOURCE] [-d] [-t TEAM] [-na MIN_AREA]
               [-u UPPER_COLOR [UPPER_COLOR ...]] [-tn] [-v]
 ```
 
+## Connection Status GUI
+
+SERT's vision software comes with a connection status GUI to help debug
+connection issues. This GUI can be displayed on a monitor connected to
+the co-processor. We use an [Adafruit 5" screen](https://www.adafruit.com/product/2260).
+
+| Good    | Warning | Bad     |
+|---------|---------|---------|
+|![good](./images/vision_good.png)|![good](./images/vision_warn.png)|![good](./images/vision_bad.png)|
+
 ## Configuration
 
 ### Command-Line Options
