@@ -24,9 +24,9 @@ class Gui:
         robot_good = self._ping(self.robot_address)
         ntabl_good = network_utils.nt.isConnected()
 
-        self.app.queueFunction(self.update_gui, radio_good, robot_good, ntabl_good)
+        self.app.queueFunction(self._update_gui, radio_good, robot_good, ntabl_good)
 
-    def update_gui(self, radio_good, robot_good, ntabl_good):
+    def _update_gui(self, radio_good, robot_good, ntabl_good):
         if radio_good and robot_good and ntabl_good:
             self.app.setBg("green")
         elif not radio_good and not robot_good and not ntabl_good:
