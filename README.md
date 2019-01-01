@@ -1,4 +1,6 @@
-# SERT Vision
+<p align="center">
+    <a href="#"><img alt="Logo" src="./images/logo.png" width="67%" /></a>
+</p>
 
 [![Team 2521][team-img]][team-url]
 [![Python 3.6][python-img]][python-url]
