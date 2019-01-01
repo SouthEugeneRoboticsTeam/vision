@@ -14,7 +14,7 @@ from . import args
 
 
 class Vision:
-    def __init__(self, app):
+    def __init__(self):
         self.args = args
 
         self.lower = np.array(self.args["lower_color"])
@@ -37,8 +37,6 @@ class Vision:
             self.source += cv2.CAP_DSHOW
 
         self.tuning = self.args["tuning"]
-
-        self.app = app
 
         if self.verbose:
             print(self.args)

@@ -1,12 +1,31 @@
 import time
 from platform import system
-from subprocess import call
+from subprocess import call, DEVNULL
 
 from vision import args, network_utils
 
 
-class Gui:
+class ConnectionGui:
     def __init__(self, app):
+        app.setSize(800, 480)
+        app.setSize("fullscreen")
+        app.setGuiPadding(0, 0)
+        app.hideTitleBar()
+
+        app.setBg("yellow")
+
+        app.setFont(size=64, family="Verdana", underline=False, slant="roman")
+
+        app.addLabel("title", "VISION SYSTEM")
+        app.getLabelWidget("title").config(font="Verdana 64 underline")
+
+        app.addLabel("radio", "RADIO: DOWN")
+        app.addLabel("robot", "ROBOT: DOWN")
+        app.addLabel("ntabl", "NTABL: DOWN")
+        app.getLabelWidget("radio").config(font="Courier 64 bold", bg="red")
+        app.getLabelWidget("robot").config(font="Courier 64 bold", bg="red")
+        app.getLabelWidget("ntabl").config(font="Courier 64 bold", bg="red")
+
         self.app = app
 
         self.radio_address = '10.{}.{}.1'.format(int(args['team'] / 100), int(args['team'] % 100))
@@ -46,7 +65,7 @@ class Gui:
         param = '-n' if system().lower() == 'windows' else '-c'
         command = ['ping', param, '1', '-w', '1', host]
 
-        return call(command) == 0
+        return call(command, stdout=DEVNULL) == 0
 
     def _listener(self, connected, _):
         self.app.queueFunction(self._update_state, "ntabl", connected)
