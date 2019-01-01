@@ -91,7 +91,8 @@ For use with the Microsoft Lifecam 3000, the camera's exposure should be
 set manually because the Lifecam will auto-adjust otherwise, making
 thresholding difficult. This can be done with V4L:
 
-```
+```bash
 $ sudo apt-get install v4l-utils
+$ v4l-ctl -d /dev/video0 -c exposure_auto=1 # 1=DISABLED, 3=ENABLED
 $ v4l-ctl -d /dev/video0 -c exposure_absolute=50
 ```
