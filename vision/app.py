@@ -9,12 +9,12 @@ import numpy as np
 from imutils.video import WebcamVideoStream
 
 import vision.cv_utils as cv_utils
-from vision.network_utils import put
+from vision.network_utils import initConnectionListener, put
 from . import args
 
 
 class Vision:
-    def __init__(self):
+    def __init__(self, app):
         self.args = args
 
         self.lower = np.array(self.args["lower_color"])
@@ -38,6 +38,8 @@ class Vision:
 
         self.tuning = self.args["tuning"]
 
+        self.app = app
+
         if self.verbose:
             print(self.args)
 
@@ -58,15 +60,16 @@ class Vision:
             box = np.int0(cv2.boxPoints(rect))
 
             goal = cv_utils.four_point_transform(mask, box)
+            width, height = goal.shape
 
             full = cv_utils.get_percent_full(goal)
             area = goal.shape[0] * goal.shape[1]
 
             if area > self.min_area and area < self.max_area and full >= self.min_full and full <= self.max_full:
                 if self.verbose:
-                    print("[Goal] x: %d, y: %d, w: %d, h: %d, area: %d, full: %f" % (x, y, w, h, area, full))
+                    print("[Goal] x: %d, y: %d, w: %d, h: %d, area: %d, full: %f" % (x, y, width, height, area, full))
 
-                offset_x, offset_y, distance = cv_utils.process_image(im, rect, goal)
+                offset_x, offset_y, distance = cv_utils.process_image(im, rect, blob)
 
                 put("xOffset", offset_x)
                 put("yOffset", offset_y)

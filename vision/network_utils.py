@@ -12,13 +12,20 @@ if args["verbose"]:
 else:
     logging.basicConfig(level=logging.INFO)
 
-_nt = NetworkTablesInstance.getDefault()
-_nt.startClientTeam(args["team"])
+nt = NetworkTablesInstance.getDefault()
+nt.startClientTeam(args["team"])
 
 # Uncomment the following line to use a local NetworkTables instance (e.g. OutlineViewer)
 # _nt.startClient("127.0.0.1")
 
-table = _nt.getTable("Vision")
+table = nt.getTable("Vision")
+
+
+def initConnectionListener(listener):
+    if not nt.isConnected():
+        listener(False, None)
+
+    nt.addConnectionListener(listener, immediateNotify=True)
 
 
 def put(key, value):

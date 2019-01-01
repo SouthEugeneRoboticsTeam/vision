@@ -1,4 +1,4 @@
 configargparse==0.13.0
 pynetworktables==2018.2.1
 imutils==0.5.2
-opencv-contrib-python==3.4.4.19
+appJar==0.93.0
