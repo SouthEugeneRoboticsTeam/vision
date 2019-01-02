@@ -1,8 +1,13 @@
+import threading
 import time
 from platform import system
 from subprocess import call, DEVNULL
 
-from vision import args, network_utils
+from appJar import gui
+from networktables import NetworkTablesInstance
+
+# TODO: Get this number from config
+team = 2521
 
 
 class ConnectionGui:
@@ -27,10 +32,12 @@ class ConnectionGui:
 
         self.app = app
 
-        self.radio_address = '10.{}.{}.1'.format(int(args['team'] / 100), int(args['team'] % 100))
-        self.robot_address = '10.{}.{}.2'.format(int(args['team'] / 100), int(args['team'] % 100))
+        self.radio_address = '10.{}.{}.1'.format(int(team / 100), int(team % 100))
+        self.robot_address = '10.{}.{}.2'.format(int(team / 100), int(team % 100))
 
-        network_utils.initConnectionListener(self._listener)
+        self.nt = NetworkTablesInstance.getDefault()
+        self.nt.startClientTeam(team)
+        self.nt.addConnectionListener(self._listener, immediateNotify=True)
 
     def run(self):
         while True:
@@ -40,7 +47,7 @@ class ConnectionGui:
     def update(self):
         radio_good = self._ping(self.radio_address)
         robot_good = self._ping(self.robot_address)
-        ntabl_good = network_utils.nt.isConnected()
+        ntabl_good = self.nt.isConnected()
 
         self.app.queueFunction(self._update_gui, radio_good, robot_good, ntabl_good)
 
@@ -69,3 +76,14 @@ class ConnectionGui:
     def _listener(self, connected, _):
         self.app.queueFunction(self._update_state, "ntabl", connected)
         self.update()
+
+
+if __name__ == "__main__":
+    app = gui("Vision")
+
+    interface = ConnectionGui(app)
+
+    gui_thread = threading.Thread(target=interface.run)
+    gui_thread.start()
+
+    app.go()

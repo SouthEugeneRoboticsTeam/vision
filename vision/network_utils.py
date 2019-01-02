@@ -21,13 +21,6 @@ nt.startClientTeam(args["team"])
 table = nt.getTable("Vision")
 
 
-def initConnectionListener(listener):
-    if not nt.isConnected():
-        listener(False, None)
-
-    nt.addConnectionListener(listener, immediateNotify=True)
-
-
 def put(key, value):
     table.putValue("last_alive", time.time() * 1000)
     table.putValue(key, value)

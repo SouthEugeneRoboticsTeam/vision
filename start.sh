@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-wait=45
+wait=15
 
 echo "$(date) Sleeping $wait seconds..."
 sleep ${wait}

@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=Communications
+Exec=<DIRECTORY>/start_gui.sh
+X-GNOME-Autostart-enabled=true
