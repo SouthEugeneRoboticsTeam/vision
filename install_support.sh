@@ -5,12 +5,14 @@
 # plugged in, and the vision service which enables the script to start when the
 # device is booted.
 
+USER=$(who am i | awk '{print $1}')
+
 V4L2_INSTALL=/usr/local/bin/config-v4l2.sh
 UDEV_INSTALL=/etc/udev/rules.d/99-webcam.rules
 VISION_SERVICE_INSTALL=/etc/init.d/vision
 COMMS_SERVICE_INSTALL=/etc/init.d/comms
 LIGHTDM_INSTALL=/etc/lightdm/lightdm.conf
-GUI_INSTALL=/home/$(whoami)/.config/autostart/$(whoami).desktop
+GUI_INSTALL=/home/$USER/.config/autostart/${USER}.desktop
 
 if [ ! -d "support" ]; then
   echo "Error: Please run from the root directory of this repository"
@@ -37,7 +39,7 @@ echo "Installing vision service in $VISION_SERVICE_INSTALL..."
 cp support/vision ${VISION_SERVICE_INSTALL}
 chmod a+x ${VISION_SERVICE_INSTALL}
 sed -i -e "s|<DIRECTORY>|$(pwd)|g" ${VISION_SERVICE_INSTALL}
-sed -i -e "s|<USER>|$(whoami)|g" ${VISION_SERVICE_INSTALL}
+sed -i -e "s|<USER>|$USER|g" ${VISION_SERVICE_INSTALL}
 update-rc.d vision defaults
 
 # Install comms service
@@ -45,7 +47,7 @@ echo "Installing comms service in $COMMS_SERVICE_INSTALL..."
 cp support/comms ${COMMS_SERVICE_INSTALL}
 chmod a+x ${COMMS_SERVICE_INSTALL}
 sed -i -e "s|<DIRECTORY>|$(pwd)|g" ${COMMS_SERVICE_INSTALL}
-sed -i -e "s|<USER>|$(whoami)|g" ${COMMS_SERVICE_INSTALL}
+sed -i -e "s|<USER>|$USER|g" ${COMMS_SERVICE_INSTALL}
 update-rc.d comms defaults
 
 # Install lightdm autologin
@@ -53,14 +55,14 @@ echo "Installing lightdm configuration in $LIGHTDM_INSTALL"
 cp support/lightdm.conf $LIGHTDM_INSTALL
 chmod a+x ${LIGHTDM_INSTALL}
 sed -i -e "s|<DIRECTORY>|$(pwd)|g" ${LIGHTDM_INSTALL}
-sed -i -e "s|<USER>|$(whoami)|g" ${LIGHTDM_INSTALL}
+sed -i -e "s|<USER>|$USER|g" ${LIGHTDM_INSTALL}
 
 # Install GUI autostart
 echo "Installing GUI in $GUI_INSTALL..."
 cp support/gui.desktop ${GUI_INSTALL}
 chmod a+x ${GUI_INSTALL}
 sed -i -e "s|<DIRECTORY>|$(pwd)|g" ${GUI_INSTALL}
-sed -i -e "s|<USER>|$(whoami)|g" ${GUI_INSTALL}
+sed -i -e "s|<USER>|$USER|g" ${GUI_INSTALL}
 sed -i -e "s|<DIRECTORY>|$(pwd)|g" start_gui.sh
 
 # Make start.sh and start_gui.sh executable
