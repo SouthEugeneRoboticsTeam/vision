@@ -69,7 +69,9 @@ class ConnectionGui:
 
     def _ping(self, host):
         param = '-n' if system().lower() == 'windows' else '-c'
-        command = ['ping', param, '1', '-w', '1', host]
+        interval = '1' if system().lower() == 'windows' else '0.2'
+
+        command = ['ping', param, '3', '-i', interval, host]
 
         return call(command, stdout=DEVNULL) == 0
 
