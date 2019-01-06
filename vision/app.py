@@ -47,36 +47,39 @@ class Vision:
         else:
             self.run_video()
 
-    def do_image(self, im, blob, mask):
+    def do_image(self, im, blobs, mask):
         found_blob = False
 
-        if blob is not None and mask is not None:
-            bounding = cv2.boundingRect(blob)
-            x, y, w, h = bounding
+        for blob in blobs:
+            if blob is not None and mask is not None:
+                bounding = cv2.boundingRect(blob)
+                x, y, w, h = bounding
 
-            rect = cv2.minAreaRect(blob)
-            box = np.int0(cv2.boxPoints(rect))
+                rect = cv2.minAreaRect(blob)
+                box = np.int0(cv2.boxPoints(rect))
 
-            goal = cv_utils.four_point_transform(mask, box)
-            width, height = goal.shape
+                goal = cv_utils.four_point_transform(mask, box)
+                width, height = goal.shape
 
-            full = cv_utils.get_percent_full(goal)
-            area = goal.shape[0] * goal.shape[1]
+                full = cv_utils.get_percent_full(goal)
+                area = goal.shape[0] * goal.shape[1]
 
-            if area > self.min_area and area < self.max_area and full >= self.min_full and full <= self.max_full:
-                if self.verbose:
-                    print("[Goal] x: %d, y: %d, w: %d, h: %d, area: %d, full: %f" % (x, y, width, height, area, full))
+                if area > self.min_area and area < self.max_area and full >= self.min_full and full <= self.max_full:
+                    if self.verbose:
+                        print("[Goal] x: %d, y: %d, w: %d, h: %d, area: %d, full: %f" % (x, y, width, height, area, full))
 
-                offset_x, offset_y = cv_utils.process_image(im, rect)
+                    offset_x, offset_y = cv_utils.process_image(im, rect)
 
-                put("xOffset", offset_x)
-                put("yOffset", offset_y)
+                    put("xOffset", offset_x)
+                    put("yOffset", offset_y)
 
-                if self.display:
-                    # Draw image details
-                    im = cv_utils.draw_images(im, rect, box)
+                    if self.display:
+                        # Draw image details
+                        im = cv_utils.draw_images(im, rect, box)
 
-                found_blob = True
+                    found_blob = True
+
+                    break
 
         put("found", found_blob)
 
@@ -92,9 +95,9 @@ class Vision:
         bgr = cv2.imread(self.image)
         im = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
 
-        blob, mask = cv_utils.get_blob(im, self.lower, self.upper)
+        blobs, mask = cv_utils.get_blobs(im, self.lower, self.upper)
 
-        im = self.do_image(im, blob, mask)
+        im = self.do_image(im, blobs, mask)
 
         if self.display:
             # Show the images
@@ -141,13 +144,13 @@ class Vision:
                 im = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
                 im = cv2.resize(im, (640, 480), 0, 0)
 
-                blobs, mask = cv_utils.get_blob(im, self.lower, self.upper)
+                blobs, mask = cv_utils.get_blobs(im, self.lower, self.upper)
 
                 im = self.do_image(im, blobs, mask)
 
                 if self.display:
                     cv2.imshow("Original", cv2.cvtColor(im, cv2.COLOR_HSV2BGR))
-                    if blobs is not None:
+                    if mask is not None:
                         cv2.imshow("Mask", mask)
 
                 if cv2.waitKey(1) & 0xFF == ord("q"):

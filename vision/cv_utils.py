@@ -60,7 +60,7 @@ def draw_images(im, rect, box):
     return im_rect
 
 
-def get_blob(im, lower, upper):
+def get_blobs(im, lower, upper):
     # Finds a blob, if one exists
 
     # Create mask of green
@@ -71,10 +71,10 @@ def get_blob(im, lower, upper):
         return None, None
 
     # Get largest blob
-    largest = get_largest(mask, 1)
+    blobs = get_all(mask)
 
-    if largest is not None:
-        return largest, mask
+    if blobs is not None:
+        return blobs, mask
     else:
         return None, None
 
@@ -95,6 +95,27 @@ def get_largest(im, n):
         return sorted_areas[n - 1][1]
     else:
         return None
+
+
+def get_all(im):
+    # Find contours of the shape
+    contours = cv2.findContours(im.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours = imutils.grab_contours(contours)
+
+    # Create array of contour areas
+    areas = [cv2.contourArea(contour) for contour in contours]
+
+    # Sort array of areas by size
+    sorted_areas = sorted(zip(areas, contours), key=lambda x: x[0], reverse=True)
+
+    if sorted_areas:
+        blobs = []
+        for contour in sorted_areas:
+            blobs.append(contour[1])
+
+        return blobs
+    else:
+        return []
 
 
 def draw_offset(im, offset_x, offset_y, point, size, color):
