@@ -9,7 +9,7 @@ import numpy as np
 from imutils.video import WebcamVideoStream
 
 import vision.cv_utils as cv_utils
-from vision.network_utils import put
+from vision.network_utils import put, flush
 from . import args
 
 
@@ -67,12 +67,10 @@ class Vision:
                 if self.verbose:
                     print("[Goal] x: %d, y: %d, w: %d, h: %d, area: %d, full: %f" % (x, y, width, height, area, full))
 
-                offset_x, offset_y, distance = cv_utils.process_image(im, rect, blob)
+                offset_x, offset_y = cv_utils.process_image(im, rect)
 
                 put("xOffset", offset_x)
                 put("yOffset", offset_y)
-                if distance is not None:
-                    put("distance", distance)
 
                 if self.display:
                     # Draw image details
@@ -81,6 +79,9 @@ class Vision:
                 found_blob = True
 
         put("found", found_blob)
+
+        # Send the data to NetworkTables
+        flush()
 
         return im
 

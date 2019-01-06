@@ -16,7 +16,7 @@ target_height = args["target_height"]
 calculate_distances = args["calculate_distances"]
 
 
-def process_image(im, rect, goal):
+def process_image(im, rect):
     # Get image height and width
     height, width = im.shape[:2]
 
@@ -40,20 +40,7 @@ def process_image(im, rect, goal):
         print("[Goal] offset pixels: (%d, %d)" % (offset_x_pixels, offset_y_pixels))
         print("[Goal] offset degrees: (%f, %f)" % (offset_x_degrees, offset_y_degrees))
 
-    dist_avg = None
-    if calculate_distances:
-        # Calculate distance from target using width and height, and take average
-        width_value = math.tan(math.radians(width / (horizontal_fov * 2.0)))
-        height_value = math.tan(math.radians(height / (vertical_fov * 2.0)))
-        dist_width = (goal.shape[0] / (target_width * 2.0 * width_value)) ** -1
-        dist_height = (goal.shape[1] / (target_height * 2.0 * height_value)) ** -1
-
-        dist_avg = (dist_width + dist_height) / 2.0
-
-        if verbose:
-            print("[Goal] distance: (w: %f, h: %f, avg: %f)" % (dist_width, dist_height, dist_avg))
-
-    return offset_x_degrees, offset_y_degrees, dist_avg
+    return offset_x_degrees, offset_y_degrees
 
 
 def draw_images(im, rect, box):
