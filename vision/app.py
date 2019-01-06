@@ -50,36 +50,57 @@ class Vision:
     def do_image(self, im, blobs, mask):
         found_blob = False
 
-        for blob in blobs:
+        pairs = []
+
+        # Create array of contour areas
+        bounding_rects = [cv2.boundingRect(blob) for blob in blobs]
+
+        # Sort array of blobs by x-value
+        sorted_blobs = sorted(zip(bounding_rects, blobs), key=lambda x: x[0], reverse=True)
+
+        goals = []
+        prev_target = None
+        for bounding_rect, blob in sorted_blobs:
             if blob is not None and mask is not None:
-                bounding = cv2.boundingRect(blob)
-                x, y, w, h = bounding
+                x, y, w, h = bounding_rect
 
-                rect = cv2.minAreaRect(blob)
-                box = np.int0(cv2.boxPoints(rect))
+                if w * h < self.min_area:
+                    continue
 
-                goal = cv_utils.four_point_transform(mask, box)
-                width, height = goal.shape
+                target = cv2.minAreaRect(blob)
+                box = np.int0(cv2.boxPoints(target))
 
-                full = cv_utils.get_percent_full(goal)
-                area = goal.shape[0] * goal.shape[1]
+                transformed_box = cv_utils.four_point_transform(mask, box)
+                width, height = transformed_box.shape
 
-                if area > self.min_area and area < self.max_area and full >= self.min_full and full <= self.max_full:
+                full = cv_utils.get_percent_full(transformed_box)
+                area = width * height
+
+                if self.min_area <= area <= self.max_area and self.min_full <= full <= self.max_full and (4.5 <= abs(target[2]) <= 24.5 or 65.5 <= abs(target[2]) <= 85.5):
                     if self.verbose:
-                        print("[Goal] x: %d, y: %d, w: %d, h: %d, area: %d, full: %f" % (x, y, width, height, area, full))
-
-                    offset_x, offset_y = cv_utils.process_image(im, rect)
-
-                    put("xOffset", offset_x)
-                    put("yOffset", offset_y)
+                        print("[Goal] x: %d, y: %d, w: %d, h: %d, area: %d, full: %f, angle: %f" % (x, y, width, height, area, full, target[2]))
 
                     if self.display:
                         # Draw image details
-                        im = cv_utils.draw_images(im, rect, box)
+                        im = cv_utils.draw_images(im, target, box)
 
-                    found_blob = True
+                    if prev_target:
+                        sum = abs(prev_target[2]) - abs(target[2])
 
-                    break
+                        if sum < 0: goals.append((prev_target, target))
+
+                    prev_target = target
+
+        goal_centers = [cv_utils.process_image(im, goal) for goal in goals]
+        possible_goals = sorted(zip(goal_centers, goals), key=lambda x: abs(x[0][0]))
+
+        if len(possible_goals) > 0:
+            centers, goal = possible_goals[0]
+
+            put("xOffset", centers[0])
+            put("yOffset", centers[1])
+
+            found_blob = True
 
         put("found", found_blob)
 

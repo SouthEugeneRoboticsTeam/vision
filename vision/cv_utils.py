@@ -14,13 +14,21 @@ target_height = args["target_height"]
 calculate_distances = args["calculate_distances"]
 
 
-def process_image(im, rect):
+def process_image(im, goal):
+    left_target = goal[0]
+    right_target = goal[1]
+
     # Get image height and width
     height, width = im.shape[:2]
 
     # Find center of goal
-    center_x = rect[0][0]
-    center_y = rect[0][1]
+    left_center_x = left_target[0][0]
+    left_center_y = left_target[0][1]
+    right_center_x = right_target[0][0]
+    right_center_y = right_target[0][1]
+
+    center_x = (left_center_x + right_center_x) / 2
+    center_y = (left_center_y + right_center_y) / 2
 
     # Find pixels away from center
     offset_x_pixels = (width / 2.0 - center_x) * -1
@@ -74,13 +82,12 @@ def get_blobs(im, lower, upper):
     if blobs is not None:
         return blobs, mask
     else:
-        return None, None
+        return [], None
 
 
 def get_largest(im, n):
     # Find contours of the shape
-    contours = cv2.findContours(im.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    contours = imutils.grab_contours(contours)
+    contours = get_all(im)
 
     # Create array of contour areas
     areas = [cv2.contourArea(contour) for contour in contours]
@@ -98,22 +105,7 @@ def get_largest(im, n):
 def get_all(im):
     # Find contours of the shape
     contours = cv2.findContours(im.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    contours = imutils.grab_contours(contours)
-
-    # Create array of contour areas
-    areas = [cv2.contourArea(contour) for contour in contours]
-
-    # Sort array of areas by size
-    sorted_areas = sorted(zip(areas, contours), key=lambda x: x[0], reverse=True)
-
-    if sorted_areas:
-        blobs = []
-        for contour in sorted_areas:
-            blobs.append(contour[1])
-
-        return blobs
-    else:
-        return []
+    return imutils.grab_contours(contours)
 
 
 def draw_offset(im, offset_x, offset_y, point, size, color):
