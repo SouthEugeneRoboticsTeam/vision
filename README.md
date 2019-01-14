@@ -34,6 +34,22 @@ usage: run.py [-h] [-i IMAGE] [-s SOURCE] [-d] [-t TEAM] [-na MIN_AREA]
               [-u UPPER_COLOR [UPPER_COLOR ...]] [-tn] [-v]
 ```
 
+## Usage with Docker
+
+If you are using Docker, the installation process is much easier.
+
+Note: due to the sizes of the images that are installed as part of the build process, it is recommended to have a few GB of hard disk space available when building.
+
+First, `cd` to this repository and then run `docker build . -t vision`. All existing config files will be used in the build process to make the image.
+
+This will produce a docker image which can be run using:
+
+```
+docker run --device /dev/video0 vision
+```
+
+Make sure that you have a camera connected before running this!
+
 ## Connection Status GUI
 
 SERT's vision software comes with a connection status GUI to help debug
