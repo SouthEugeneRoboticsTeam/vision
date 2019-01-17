@@ -1,4 +1,4 @@
 configargparse==0.13.0
-pynetworktables==2018.2.1
+pynetworktables==2019.0.0
 imutils==0.5.2
 appJar==0.93.0
