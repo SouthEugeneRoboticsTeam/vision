@@ -6,8 +6,10 @@ services:
 before_install:
   - sudo apt-get update
   - sudo docker build . -t vision
-install:
   - sudo apt-get install python3-pip
+install:
   - pip install flake8
 script:
   - flake8 --statistics --show-source --disable-noqa
+  - docker run vision python run.py -i tests/images/goal2016.png
+  - docker run vision python run.py -i tests/images/goal2017.png
