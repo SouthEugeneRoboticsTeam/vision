@@ -32,14 +32,16 @@ model_points = np.array([
 def process_image(im, goal):
     focal_length = im.shape[1]
     center = (im.shape[1] / 2, im.shape[0] / 2)
+
+    # Calculated camera matrix
     camera_matrix = np.array(
-        [[focal_length, 0, center[0]],
-         [0, focal_length, center[1]],
-         [0, 0, 1]], dtype="double"
+        [[670.54273808,   0.,         347.71623038],
+         [  0.,         678.11163899, 238.40313974],
+         [  0.,           0.,           1.        ]], dtype="double"
     )
 
     # Distortion coefficients, from checkerboard vision
-    dist_coeffs = np.array([0.11540747, -0.75080324,  0.00286406,  0.00171277,  0.77822593])
+    dist_coeffs = np.array([2.06743428e-01, -1.65831760e+00, 1.06922781e-03, 1.03675715e-02, 3.33870248e+00])
     #dist_coeffs = np.zeros((4, 1))
 
     right_target = goal[0]
