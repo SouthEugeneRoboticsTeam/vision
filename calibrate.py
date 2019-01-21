@@ -66,7 +66,7 @@ if __name__ == '__main__':
             return None
 
         print('           %s... OK' % fn)
-        return (corners.reshape(-1, 2), pattern_points)
+        return corners.reshape(-1, 2), pattern_points
 
 
     threads_num = int(args.get('--threads'))
