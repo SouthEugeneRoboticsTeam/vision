@@ -76,7 +76,7 @@ class Vision:
                 full = cv_utils.get_percent_full(transformed_box)
                 area = width * height
 
-                if self.min_area <= area <= self.max_area and self.min_full <= full <= self.max_full and (4.5 <= abs(target[2]) <= 24.5 or 65.5 <= abs(target[2]) <= 85.5):
+                if self.min_area <= area <= self.max_area and self.min_full <= full <= self.max_full:
                     if self.verbose:
                         print("[Goal] x: %d, y: %d, w: %d, h: %d, area: %d, full: %f, angle: %f" % (x, y, width, height, area, full, target[2]))
 
