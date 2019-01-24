@@ -50,8 +50,6 @@ class Vision:
     def do_image(self, im, blobs, mask):
         found_blob = False
 
-        pairs = []
-
         # Create array of contour areas
         bounding_rects = [cv2.boundingRect(blob) for blob in blobs]
 
@@ -87,7 +85,8 @@ class Vision:
                     if prev_target:
                         sum = abs(prev_target[2]) - abs(target[2])
 
-                        if sum < 0: goals.append((prev_target, target))
+                        if sum < 0:
+                            goals.append((prev_target, target))
 
                     prev_target = target
 
@@ -138,6 +137,10 @@ class Vision:
 
         camera = WebcamVideoStream(src=self.source).start()
 
+        # Set stream size
+        camera.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        camera.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+
         timeout = 0
 
         if self.tuning:
@@ -158,12 +161,14 @@ class Vision:
             cv2.createTrackbar("Upper V", "Settings", self.upper[2], 255,
                                lambda val: self.update_setting(False, 2, val))
 
+        bgr = np.zeros(shape=(480, 640, 3), dtype=np.uint8)
+        im = np.zeros(shape=(480, 640, 1), dtype=np.uint8)
+
         while True:
             bgr = camera.read()
 
             if bgr is not None:
-                im = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
-                im = cv2.resize(im, (640, 480), 0, 0)
+                im = cv2.cvtColor(cv2.resize(bgr, (640, 480), 0, 0), cv2.COLOR_BGR2HSV)
 
                 blobs, mask = cv_utils.get_blobs(im, self.lower, self.upper)
 
@@ -179,11 +184,9 @@ class Vision:
                     break
             else:
                 if timeout == 0:
-                    print("No camera detected... Retrying...")
+                    timeout = time.time()
 
-                timeout += 1
-
-                if timeout > 5000:
+                if time.time() - timeout > 5.0:
                     print("Camera search timed out!")
                     break
 

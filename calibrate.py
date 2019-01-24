@@ -40,7 +40,6 @@ if __name__ == '__main__':
     img_points = []
     h, w = cv.imread(img_names[0], cv.IMREAD_GRAYSCALE).shape[:2]  # TODO: use imquery call to retrieve results
 
-
     def processImage(fn):
         print('processing %s... ' % fn)
         img = cv.imread(fn, 0)
@@ -67,7 +66,6 @@ if __name__ == '__main__':
 
         print('           %s... OK' % fn)
         return corners.reshape(-1, 2), pattern_points
-
 
     threads_num = int(args.get('--threads'))
     if threads_num <= 1:
@@ -110,7 +108,7 @@ if __name__ == '__main__':
         # crop and save the image
         # print(roi)
         x, y, w, h = roi
-        dst = dst[y:y+h, x:x+w]
+        dst = dst[y:y + h, x:x + w]
 
         print('Undistorted image written to: %s' % outfile)
         cv.imwrite(outfile, dst)

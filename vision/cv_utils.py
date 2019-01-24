@@ -29,20 +29,18 @@ model_points = np.array([
     (5.375, -2.938, 0.0),
 ])
 
-def process_image(im, goal):
-    focal_length = im.shape[1]
-    center = (im.shape[1] / 2, im.shape[0] / 2)
 
+def process_image(im, goal):
     # Calculated camera matrix
     camera_matrix = np.array(
-        [[670.54273808,   0.,         347.71623038],
-         [  0.,         678.11163899, 238.40313974],
-         [  0.,           0.,           1.        ]], dtype="double"
+        [[670.54273808, 0., 347.71623038],
+         [0., 678.11163899, 238.40313974],
+         [0., 0., 1.]], dtype="double"
     )
 
     # Distortion coefficients, from checkerboard vision
     dist_coeffs = np.array([2.06743428e-01, -1.65831760e+00, 1.06922781e-03, 1.03675715e-02, 3.33870248e+00])
-    #dist_coeffs = np.zeros((4, 1))
+    # dist_coeffs = np.zeros((4, 1))
 
     right_target = goal[0]
     left_target = goal[1]
@@ -64,7 +62,7 @@ def process_image(im, goal):
     # Calculate rotation vector and translation vector
     (ret, rvec, tvec) = cv2.solvePnP(model_points, image_points, camera_matrix, dist_coeffs)
 
-    (endpoint2D, jacobian) = cv2.projectPoints(np.array([(0.0, 0.0, 6.0*25.4)]), rvec, tvec, camera_matrix, dist_coeffs)
+    (endpoint2D, jacobian) = cv2.projectPoints(np.array([(0.0, 0.0, 6.0)]), rvec, tvec, camera_matrix, dist_coeffs)
 
     distance, robot_angle, target_angle = compute_output_values(rvec, tvec)
 
