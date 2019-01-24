@@ -11,5 +11,5 @@ install:
   - pip install flake8
 script:
   - flake8 --statistics --show-source --disable-noqa
-  - docker run vision python run.py -i tests/images/goal2016.png
-  - docker run vision python run.py -i tests/images/goal2017.png
+  - docker run vision python3 run.py -i tests/images/goal2016.png
+  - docker run vision python3 run.py -i tests/images/goal2017.png

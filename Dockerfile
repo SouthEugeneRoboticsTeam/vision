@@ -1,4 +1,4 @@
-FROM valian/docker-python-opencv-ffmpeg
+FROM valian/docker-python-opencv-ffmpeg:py3
 
 ADD config app/config
 ADD tests app/tests
@@ -8,6 +8,6 @@ ADD requirements.txt app/requirements.txt
 
 WORKDIR app
 
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
-CMD python run.py
+CMD python3 run.py
