@@ -9,7 +9,7 @@ import numpy as np
 from imutils.video import WebcamVideoStream
 
 import vision.cv_utils as cv_utils
-from vision.network_utils import put, flush
+from vision.network_utils import put, flush, settings_table
 from . import args
 
 
@@ -17,14 +17,16 @@ class Vision:
     def __init__(self):
         self.args = args
 
-        self.lower = np.array(self.args["lower_color"])
-        self.upper = np.array(self.args["upper_color"])
+        self.settings = {
+            'lower': np.array(self.args["lower_color"]),
+            'upper': np.array(self.args["upper_color"]),
 
-        self.min_area = int(self.args["min_area"])
-        self.max_area = int(self.args["max_area"])
+            'min_area': int(self.args["min_area"]),
+            'max_area': int(self.args["max_area"]),
 
-        self.min_full = float(self.args["min_full"])
-        self.max_full = float(self.args["max_full"])
+            'min_full': float(self.args["min_full"]),
+            'max_full': float(self.args["max_full"]),
+        }
 
         self.image = self.args["image"]
 
@@ -37,6 +39,10 @@ class Vision:
             self.source += cv2.CAP_DSHOW
 
         self.tuning = self.args["tuning"]
+
+        self.put_settings()
+
+        settings_table.addEntryListener(self.settings_listener, immediateNotify=True, localNotify=True)
 
         if self.verbose:
             print(self.args)
@@ -62,7 +68,7 @@ class Vision:
             if blob is not None and mask is not None:
                 x, y, w, h = bounding_rect
 
-                if w * h < self.min_area:
+                if w * h < self.settings['min_area']:
                     continue
 
                 target = cv2.minAreaRect(blob)
@@ -74,7 +80,7 @@ class Vision:
                 full = cv_utils.get_percent_full(transformed_box)
                 area = width * height
 
-                if self.min_area <= area <= self.max_area and self.min_full <= full <= self.max_full:
+                if self.settings['min_area'] <= area <= self.settings['max_area'] and self.settings['min_full'] <= full <= self.settings['max_full']:
                     if self.verbose:
                         print("[Goal] x: %d, y: %d, w: %d, h: %d, area: %d, full: %f, angle: %f" % (x, y, width, height, area, full, target[2]))
 
@@ -115,7 +121,7 @@ class Vision:
         bgr = cv2.imread(self.image)
         im = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
 
-        blobs, mask = cv_utils.get_blobs(im, self.lower, self.upper)
+        blobs, mask = cv_utils.get_blobs(im, self.settings['lower'], self.settings['upper'])
 
         im = self.do_image(im, blobs, mask)
 
@@ -147,19 +153,19 @@ class Vision:
             cv2.namedWindow("Settings")
             cv2.resizeWindow("Settings", 700, 350)
 
-            cv2.createTrackbar("Lower H", "Settings", self.lower[0], 255,
-                               lambda val: self.update_setting(True, 0, val))
-            cv2.createTrackbar("Lower S", "Settings", self.lower[1], 255,
-                               lambda val: self.update_setting(True, 1, val))
-            cv2.createTrackbar("Lower V", "Settings", self.lower[2], 255,
-                               lambda val: self.update_setting(True, 2, val))
+            cv2.createTrackbar("Lower H", "Settings", self.settings['lower'][0], 255,
+                               lambda val: self.update_thresh(True, 0, val))
+            cv2.createTrackbar("Lower S", "Settings", self.settings['lower'][1], 255,
+                               lambda val: self.update_thresh(True, 1, val))
+            cv2.createTrackbar("Lower V", "Settings", self.settings['lower'][2], 255,
+                               lambda val: self.update_thresh(True, 2, val))
 
-            cv2.createTrackbar("Upper H", "Settings", self.upper[0], 255,
-                               lambda val: self.update_setting(False, 0, val))
-            cv2.createTrackbar("Upper S", "Settings", self.upper[1], 255,
-                               lambda val: self.update_setting(False, 1, val))
-            cv2.createTrackbar("Upper V", "Settings", self.upper[2], 255,
-                               lambda val: self.update_setting(False, 2, val))
+            cv2.createTrackbar("Upper H", "Settings", self.settings['upper'][0], 255,
+                               lambda val: self.update_thresh(False, 0, val))
+            cv2.createTrackbar("Upper S", "Settings", self.settings['upper'][1], 255,
+                               lambda val: self.update_thresh(False, 1, val))
+            cv2.createTrackbar("Upper V", "Settings", self.settings['upper'][2], 255,
+                               lambda val: self.update_thresh(False, 2, val))
 
         bgr = np.zeros(shape=(480, 640, 3), dtype=np.uint8)
         im = np.zeros(shape=(480, 640, 1), dtype=np.uint8)
@@ -170,7 +176,7 @@ class Vision:
             if bgr is not None:
                 im = cv2.cvtColor(cv2.resize(bgr, (640, 480), 0, 0), cv2.COLOR_BGR2HSV)
 
-                blobs, mask = cv_utils.get_blobs(im, self.lower, self.upper)
+                blobs, mask = cv_utils.get_blobs(im, self.settings['lower'], self.settings['upper'])
 
                 im = self.do_image(im, blobs, mask)
 
@@ -197,15 +203,34 @@ class Vision:
                 os.makedirs("settings")
 
             with open("settings/save-{}.thr".format(round(time.time() * 1000)), "w") as thresh_file:
-                values = enumerate(self.lower.tolist() + self.upper.tolist())
+                values = enumerate(self.settings['lower'].tolist() + self.settings['upper'].tolist())
                 thresh_file.writelines(["{}: {}\n".format(setting_names[num], value[0])
                                         for num, value in values])
 
         camera.stop()
         cv2.destroyAllWindows()
 
-    def update_setting(self, lower, index, value):
+    def update_thresh(self, lower, index, value):
         if lower:
-            self.lower[index] = value
+            self.settings['lower'][index] = value
         else:
-            self.upper[index] = value
+            self.settings['upper'][index] = value
+
+        self.put_settings()
+
+    def settings_listener(self, source, key, value, isNew):
+        key_parts = key.split('_')
+        if key_parts[0] == 'lower' or key_parts[0] == 'upper':
+            index = 0 if key_parts[1] == 'H' else 1 if key_parts[1] == 'S' in key else 2
+            self.settings[key_parts[0]][index] = value
+        else:
+            self.settings[key] = value
+
+    def put_settings(self):
+        for setting in self.settings:
+            if setting == 'lower' or setting == 'upper':
+                settings_table.putValue('{}_H'.format(setting), int(self.settings[setting][0][0]))
+                settings_table.putValue('{}_S'.format(setting), int(self.settings[setting][1][0]))
+                settings_table.putValue('{}_V'.format(setting), int(self.settings[setting][2][0]))
+            else:
+                settings_table.putValue(setting, self.settings[setting])
