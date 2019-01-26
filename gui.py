@@ -9,6 +9,13 @@ from networktables import NetworkTablesInstance
 # TODO: Get this number from config
 team = 2521
 
+up_color = "green"
+down_color = "red"
+warn_color = "yellow"
+
+up_text = " UP "
+down_text = "DOWN"
+
 
 class ConnectionGui:
     def __init__(self, app):
@@ -16,16 +23,16 @@ class ConnectionGui:
         app.setSize("fullscreen")
         app.setGuiPadding(0, 0)
 
-        app.setBg("yellow")
+        app.setBg(warn_color)
 
         app.setFont(size=64, family="Ubuntu", underline=False, slant="roman")
 
         app.addLabel("title", "VISION SYSTEM")
         app.getLabelWidget("title").config(font="Ubuntu 64 underline")
 
-        app.addLabel("radio", "RADIO: DOWN")
-        app.addLabel("robot", "ROBOT: DOWN")
-        app.addLabel("ntabl", "NTABL: DOWN")
+        app.addLabel("radio", "RADIO: {}".format(down_text))
+        app.addLabel("robot", "ROBOT: {}".format(down_text))
+        app.addLabel("ntabl", "NTABL: {}".format(down_text))
         app.getLabelWidget("radio").config(font="Ubuntu\ Mono 64 bold", bg="red")
         app.getLabelWidget("robot").config(font="Ubuntu\ Mono 64 bold", bg="red")
         app.getLabelWidget("ntabl").config(font="Ubuntu\ Mono 64 bold", bg="red")
@@ -53,19 +60,19 @@ class ConnectionGui:
 
     def _update_gui(self, radio_good, robot_good, ntabl_good):
         if radio_good and robot_good and ntabl_good:
-            self.app.setBg("green")
+            self.app.setBg(up_color)
         elif not radio_good and not robot_good and not ntabl_good:
-            self.app.setBg("red")
+            self.app.setBg(down_color)
         else:
-            self.app.setBg("yellow")
+            self.app.setBg(warn_color)
 
         self._update_state("radio", radio_good)
         self._update_state("robot", robot_good)
         self._update_state("ntabl", ntabl_good)
 
     def _update_state(self, element, good):
-        self.app.setLabelBg(element, "green" if good else "red")
-        self.app.setLabel(element, "{}: {}".format(element.upper(), "GOOD" if good else "DOWN"))
+        self.app.setLabelBg(element, up_color if good else down_color)
+        self.app.setLabel(element, "{}: {}".format(element.upper(), up_text if good else down_text))
 
     def _ping(self, host):
         param = '-n' if system().lower() == 'windows' else '-c'
