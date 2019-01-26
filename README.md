@@ -27,10 +27,9 @@ $ python run.py
 Full usage:
 
 ```text
-usage: run.py [-h] [-i IMAGE] [-s SOURCE] [-d] [-t TEAM] [-na MIN_AREA]
+usage: run.py [-h] [-i IMAGE] [-s SOURCE] [-t TEAM] [-d] [-na MIN_AREA]
               [-xa MAX_AREA] [-nf MIN_FULL] [-xf MAX_FULL]
-              [-hf HORIZONTAL_FOV] [-vf VERTICAL_FOV] [-tw TARGET_WIDTH]
-              [-th TARGET_HEIGHT] [-l LOWER_COLOR [LOWER_COLOR ...]]
+              [-l LOWER_COLOR [LOWER_COLOR ...]]
               [-u UPPER_COLOR [UPPER_COLOR ...]] [-tn] [-v]
 ```
 
@@ -70,13 +69,14 @@ All command-line arguments may be configured in the `config.ini` file
 argument may be edited using the `lower-rgb` line in the `config.ini`.
 
 ```text
+optional arguments:
   -h, --help            show this help message and exit
   -i IMAGE, --image IMAGE
                         path to image
   -s SOURCE, --source SOURCE
                         video source (default=0)
-  -d, --display         display results of processing in a new window
   -t TEAM, --team TEAM  the team of the target roboRIO
+  -d, --display         display results of processing in a new window
   -na MIN_AREA, --min-area MIN_AREA
                         minimum area for blobs
   -xa MAX_AREA, --max-area MAX_AREA
@@ -85,14 +85,6 @@ argument may be edited using the `lower-rgb` line in the `config.ini`.
                         minimum fullness of blobs
   -xf MAX_FULL, --max-full MAX_FULL
                         maximum fullness of blobs
-  -hf HORIZONTAL_FOV, --horizontal-fov HORIZONTAL_FOV
-                        horizontal fov of camera
-  -vf VERTICAL_FOV, --vertical-fov VERTICAL_FOV
-                        vertical fov of camera
-  -tw TARGET_WIDTH, --target-width TARGET_WIDTH
-                        width 1m away
-  -th TARGET_HEIGHT, --target-height TARGET_HEIGHT
-                        height 1m away
   -l LOWER_COLOR [LOWER_COLOR ...], --lower-color LOWER_COLOR [LOWER_COLOR ...]
                         lower color threshold in HSV
   -u UPPER_COLOR [UPPER_COLOR ...], --upper-color UPPER_COLOR [UPPER_COLOR ...]

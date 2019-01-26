@@ -9,11 +9,6 @@ import numpy as np
 from . import args
 
 verbose = args["verbose"]
-horizontal_fov = args["horizontal_fov"]
-vertical_fov = args["vertical_fov"]
-target_width = args["target_width"]
-target_height = args["target_height"]
-calculate_distances = args["calculate_distances"]
 display = args["display"]
 
 # Points comprising 3D model of target
