@@ -9,9 +9,9 @@ from networktables import NetworkTablesInstance
 # TODO: Get this number from config
 team = 2521
 
-up_color = "green"
-down_color = "red"
-warn_color = "yellow"
+up_color = "#00ff00"
+down_color = "#ff0000"
+warn_color = "#ffff00"
 
 up_text = " UP "
 down_text = "DOWN"
