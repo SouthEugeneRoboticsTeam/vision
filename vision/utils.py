@@ -15,6 +15,7 @@ def get_args():
     parser = configargparse.ArgParser(default_config_files=default_config, auto_env_var_prefix='VISION_')
 
     parser.add_argument("-i", "--image", help="path to image")
+    parser.add_argument("-n", "--name", type=str, default="camera", help="the name of this camera")
     parser.add_argument("-s", "--source", type=str, default="/dev/video0",
                         help="path to video source (default=/dev/video0)")
     parser.add_argument("-t", "--team", type=int, help="the team of the target roboRIO")

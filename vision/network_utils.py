@@ -13,15 +13,15 @@ else:
     logging.basicConfig(level=logging.INFO)
 
 nt = NetworkTablesInstance.getDefault()
-# nt.startClientTeam(args["team"])
+nt.startClientTeam(args["team"])
 
 # Update NetworkTables with our new values every 100ms if not flushed
 nt.setUpdateRate(0.1)
 
 # Uncomment the following line to use a local NetworkTables instance (e.g. OutlineViewer)
-nt.startClient("127.0.0.1")
+# nt.startClient("127.0.0.1")
 
-table = nt.getTable("Vision")
+table = nt.getTable("Vision").getSubTable(args["name"])
 settings_table = table.getSubTable("settings")
 
 
