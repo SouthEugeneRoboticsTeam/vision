@@ -10,8 +10,8 @@ fi
 
 v4l2-ctl --device $1 \
   -c brightness=30 \
-  -c contrast=8 \
-  -c saturation=100 \
+  -c contrast=10 \
+  -c saturation=60 \
   -c white_balance_temperature_auto=0 \
   -c power_line_frequency=0 \
   -c white_balance_temperature=5000 \

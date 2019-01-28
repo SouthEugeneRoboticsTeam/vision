@@ -143,9 +143,9 @@ class Vision:
 
         camera = WebcamVideoStream(src=self.source).start()
 
-        # Set stream size
-        camera.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        camera.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        # Set stream size -- TODO: figure out why this isn't working
+        #camera.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        #camera.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
         timeout = 0
 
@@ -168,7 +168,7 @@ class Vision:
                                lambda val: self.update_thresh(False, 2, val))
 
         bgr = np.zeros(shape=(480, 640, 3), dtype=np.uint8)
-        im = np.zeros(shape=(480, 640, 1), dtype=np.uint8)
+        im = np.zeros(shape=(480, 640, 3), dtype=np.uint8)
 
         while True:
             bgr = camera.read()

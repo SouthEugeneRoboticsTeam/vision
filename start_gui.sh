@@ -7,4 +7,5 @@ wait=5
 echo "$(date) Sleeping $wait seconds..."
 sleep ${wait}
 echo "$(date) Starting GUI..."
-python3 <DIRECTORY>/gui.py
+
+python3 <DIRECTORY>/gui.py &

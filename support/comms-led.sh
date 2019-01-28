@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+####### SCRIPT DISABLED #######
+exit 0
+###############################
+
 HOST=10.25.21.2
 GPIO=57
 
