@@ -35,8 +35,11 @@ class Vision:
         self.verbose = self.args["verbose"]
 
         self.source = self.args["source"]
-        if sys.platform == 'win32':
-            self.source += cv2.CAP_DSHOW
+        if self.source.isdigit():
+            self.source = int(self.source)
+
+            if sys.platform == "win32":
+                self.source += cv2.CAP_DSHOW
 
         self.tuning = self.args["tuning"]
 
