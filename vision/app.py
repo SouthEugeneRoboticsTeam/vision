@@ -144,8 +144,8 @@ class Vision:
         camera = WebcamVideoStream(src=self.source).start()
 
         # Set stream size -- TODO: figure out why this isn't working
-        #camera.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        #camera.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        # camera.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        # camera.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
         timeout = 0
 
