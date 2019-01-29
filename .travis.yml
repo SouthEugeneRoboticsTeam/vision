@@ -2,7 +2,7 @@ language: python
 dist: trusty
 python: 3.6.3
 services:
-    - docker
+  - docker
 before_install:
   - sudo apt-get update
   - sudo docker build . -t vision
