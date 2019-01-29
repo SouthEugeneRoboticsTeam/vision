@@ -11,17 +11,19 @@ from . import args
 verbose = args["verbose"]
 display = args["display"]
 
+target_offset = (16.0 + 36.0) * -1
+
 # Points comprising 3D model of target
 model_points = np.array([
-    (-5.938, 2.938, 0.0),
-    (-4.063, 2.375, 0.0),
-    (-5.438, -2.938, 0.0),
-    (-7.375, -2.500, 0.0),
+    (-5.938, 2.938, target_offset),
+    (-4.063, 2.375, target_offset),
+    (-5.438, -2.938, target_offset),
+    (-7.375, -2.500, target_offset),
 
-    (3.938, 2.375, 0.0),
-    (5.875, 2.875, 0.0),
-    (7.313, -2.500, 0.0),
-    (5.375, -2.938, 0.0),
+    (3.938, 2.375, target_offset),
+    (5.875, 2.875, target_offset),
+    (7.313, -2.500, target_offset),
+    (5.375, -2.938, target_offset),
 ])
 
 
@@ -61,9 +63,12 @@ def process_image(im, goal):
 
     distance, robot_angle, target_angle = compute_output_values(rvec, tvec)
 
+    x_distance = np.sin(robot_angle) * distance
+    y_distance = np.cos(robot_angle) * distance
+
     if verbose:
         print(distance, robot_angle, target_angle, rvec)
-        print("X: {}, Y: {}".format(np.sin(robot_angle) * distance, np.cos(robot_angle) * distance))
+        print("X: {}, Y: {}".format(x_distance, y_distance))
 
     if display:
         cv2.circle(im, (int(left_center_x), int(left_center_y)), 3, (0, 0, 255), -1)
@@ -80,7 +85,7 @@ def process_image(im, goal):
         except OverflowError:
             pass
 
-    return robot_angle, target_angle, distance, tvec, rvec
+    return robot_angle, target_angle, x_distance, y_distance, distance
 
 
 def draw_images(im, rect, box):

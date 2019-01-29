@@ -13,5 +13,5 @@ modprobe uvcvideo nodrop=1 timeout=6000
 lsusb
 echo "$(date) Starting vision..."
 
-python3 run.py -s ${hatch_cam} &
-python3 run.py -s ${cargo_cam} &
+python3 run.py -s ${hatch_cam} -n hatch &
+python3 run.py -s ${cargo_cam} -n cargo &

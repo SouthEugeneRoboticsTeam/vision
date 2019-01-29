@@ -105,8 +105,13 @@ class Vision:
         if len(possible_goals) > 0:
             centers, goal = possible_goals[0]
 
-            put("xOffset", centers[0])
-            put("yOffset", centers[1])
+            robot_angle, target_angle, x_distance, y_distance, distance = centers
+
+            put("distance", distance)
+            put("x_distance", x_distance)
+            put("y_distance", y_distance + 16.0) # Add 1/2 robot length
+            put("robot_angle", robot_angle)
+            put("target_angle", target_angle)
 
             found_blob = True
 
