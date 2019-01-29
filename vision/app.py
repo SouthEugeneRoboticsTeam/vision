@@ -143,8 +143,6 @@ class Vision:
             cv2.waitKey(0)
             cv2.destroyAllWindows()
 
-        self.kill_received = True
-
     def run_video(self):
         if self.verbose:
             print("No image path specified, reading from camera video feed")
@@ -194,7 +192,6 @@ class Vision:
                         cv2.imshow("Mask", mask)
 
                 if cv2.waitKey(1) & 0xFF == ord("q"):
-                    self.kill_received = True
                     break
             else:
                 if timeout == 0:
