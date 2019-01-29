@@ -109,7 +109,7 @@ class Vision:
 
             put("distance", distance)
             put("x_distance", x_distance)
-            put("y_distance", y_distance + 16.0) # Add 1/2 robot length
+            put("y_distance", y_distance + 16.0)  # Add 1/2 robot length
             put("robot_angle", robot_angle)
             put("target_angle", target_angle)
 
