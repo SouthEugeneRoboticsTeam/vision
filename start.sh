@@ -6,6 +6,12 @@ wait=15
 hatch_cam="/dev/v4l/by-path/platform-70090000.xusb-usb-0:3.1:1.0-video-index0"
 cargo_cam="/dev/v4l/by-path/platform-70090000.xusb-usb-0:3.3:1.0-video-index0"
 
+start_camera() {
+  while true; do
+    python3 run.py -n $1 -s $2
+  done
+}
+
 echo "$(date) Sleeping $wait seconds..."
 sleep ${wait}
 echo "$(date) Running modprobe..."
@@ -13,5 +19,5 @@ modprobe uvcvideo nodrop=1 timeout=6000
 lsusb
 echo "$(date) Starting vision..."
 
-python3 run.py -s ${hatch_cam} -n hatch &
-python3 run.py -s ${cargo_cam} -n cargo &
+start_camera hatch ${hatch_cam} &
+start_camera cargo ${cargo_cam} &
