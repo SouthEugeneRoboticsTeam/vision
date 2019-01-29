@@ -1,6 +1,0 @@
-[Python]
-bears = SpaceConsistencyBear
-files = **/*.py
-ignore = opencv
-use_spaces = True
-default_actions = *: ApplyPatchAction
