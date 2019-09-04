@@ -9,33 +9,33 @@ from networktables import NetworkTablesInstance
 # TODO: Get this number from config
 team = 2521
 
-up_color = "#00ff00"
-down_color = "#ff0000"
-warn_color = "#ffff00"
+up_color = '#00ff00'
+down_color = '#ff0000'
+warn_color = '#ffff00'
 
-up_text = " UP "
-down_text = "DOWN"
+up_text = ' UP '
+down_text = 'DOWN'
 
 
 class ConnectionGui:
     def __init__(self, app):
         app.setSize(800, 480)
-        app.setSize("fullscreen")
+        app.setSize('fullscreen')
         app.setGuiPadding(0, 0)
 
         app.setBg(warn_color)
 
-        app.setFont(size=64, family="Ubuntu", underline=False, slant="roman")
+        app.setFont(size=64, family='Ubuntu', underline=False, slant='roman')
 
-        app.addLabel("title", "VISION SYSTEM")
-        app.getLabelWidget("title").config(font="Ubuntu 64 underline")
+        app.addLabel('title', 'VISION SYSTEM')
+        app.getLabelWidget('title').config(font='Ubuntu 64 underline')
 
-        app.addLabel("radio", "RADIO: {}".format(down_text))
-        app.addLabel("robot", "ROBOT: {}".format(down_text))
-        app.addLabel("ntabl", "NTABL: {}".format(down_text))
-        app.getLabelWidget("radio").config(font="Ubuntu\ Mono 64 bold", bg="red")
-        app.getLabelWidget("robot").config(font="Ubuntu\ Mono 64 bold", bg="red")
-        app.getLabelWidget("ntabl").config(font="Ubuntu\ Mono 64 bold", bg="red")
+        app.addLabel('radio', 'RADIO: {}'.format(down_text))
+        app.addLabel('robot', 'ROBOT: {}'.format(down_text))
+        app.addLabel('ntabl', 'NTABL: {}'.format(down_text))
+        app.getLabelWidget('radio').config(font='Ubuntu\ Mono 64 bold', bg='red')
+        app.getLabelWidget('robot').config(font='Ubuntu\ Mono 64 bold', bg='red')
+        app.getLabelWidget('ntabl').config(font='Ubuntu\ Mono 64 bold', bg='red')
 
         self.app = app
 
@@ -66,13 +66,13 @@ class ConnectionGui:
         else:
             self.app.setBg(warn_color)
 
-        self._update_state("radio", radio_good)
-        self._update_state("robot", robot_good)
-        self._update_state("ntabl", ntabl_good)
+        self._update_state('radio', radio_good)
+        self._update_state('robot', robot_good)
+        self._update_state('ntabl', ntabl_good)
 
     def _update_state(self, element, good):
         self.app.setLabelBg(element, up_color if good else down_color)
-        self.app.setLabel(element, "{}: {}".format(element.upper(), up_text if good else down_text))
+        self.app.setLabel(element, '{}: {}'.format(element.upper(), up_text if good else down_text))
 
     def _ping(self, host):
         param = '-n' if system().lower() == 'windows' else '-c'
@@ -83,12 +83,12 @@ class ConnectionGui:
         return call(command, stdout=DEVNULL) == 0
 
     def _listener(self, connected, _):
-        self.app.queueFunction(self._update_state, "ntabl", connected)
+        self.app.queueFunction(self._update_state, 'ntabl', connected)
         self.update()
 
 
-if __name__ == "__main__":
-    app = gui("Vision")
+if __name__ == '__main__':
+    app = gui('Vision')
 
     interface = ConnectionGui(app)
 

@@ -24,30 +24,30 @@ class Vision:
         self.lock_id = None
 
         self.settings = {
-            'lower': np.array(self.args["lower_color"]),
-            'upper': np.array(self.args["upper_color"]),
+            'lower': np.array(self.args['lower_color']),
+            'upper': np.array(self.args['upper_color']),
 
-            'min_area': int(self.args["min_area"]),
-            'max_area': int(self.args["max_area"]),
+            'min_area': int(self.args['min_area']),
+            'max_area': int(self.args['max_area']),
 
-            'min_full': float(self.args["min_full"]),
-            'max_full': float(self.args["max_full"]),
+            'min_full': float(self.args['min_full']),
+            'max_full': float(self.args['max_full']),
         }
 
-        self.image = self.args["image"]
+        self.image = self.args['image']
 
-        self.display = self.args["display"]
+        self.display = self.args['display']
 
-        self.verbose = self.args["verbose"]
+        self.verbose = self.args['verbose']
 
-        self.source = self.args["source"]
+        self.source = self.args['source']
         if self.source.isdigit():
             self.source = int(self.source)
 
-            if sys.platform == "win32":
+            if sys.platform == 'win32':
                 self.source += cv2.CAP_DSHOW
 
-        self.tuning = self.args["tuning"]
+        self.tuning = self.args['tuning']
 
         self.put_settings()
 
@@ -99,13 +99,13 @@ class Vision:
 
                 if self.settings['min_area'] <= area <= self.settings['max_area'] and self.settings['min_full'] <= full <= self.settings['max_full']:
                     if self.verbose:
-                        print("[Goal] x: %d, y: %d, w: %d, h: %d, area: %d, full: %f, angle: %f" % (x, y, width, height, area, full, target[2]))
+                        print('[Goal] x: %d, y: %d, w: %d, h: %d, area: %d, full: %f, angle: %f' % (x, y, width, height, area, full, target[2]))
 
                     if self.display:
                         # Draw image details
                         im = cv_utils.draw_images(im, target, box)
 
-                    if prev_target:
+                    if prev_target is not None:
                         sum = abs(prev_target[2]) - abs(target[2])
 
                         if sum < 0:
@@ -144,20 +144,20 @@ class Vision:
                 try:
                     centers, goal = next(filter(lambda goal: goal[0][5] == objects[self.lock_id], possible_goals))
                 except Exception:
-                    print("Exception while finding goal with lock id")
+                    print('Exception while finding goal with lock id')
 
             if centers is not None:
                 robot_angle, target_angle, x_distance, y_distance, distance, _ = centers
 
-                put("distance", distance)
-                put("x_distance", x_distance)
-                put("y_distance", y_distance)
-                put("robot_angle", robot_angle)
-                put("target_angle", target_angle)
+                put('distance', distance)
+                put('x_distance', x_distance)
+                put('y_distance', y_distance)
+                put('robot_angle', robot_angle)
+                put('target_angle', target_angle)
 
                 found_blob = True
 
-        put("found", found_blob)
+        put('found', found_blob)
 
         # Send the data to NetworkTables
         flush()
@@ -166,7 +166,7 @@ class Vision:
 
     def run_image(self):
         if self.verbose:
-            print("Image path specified, reading from %s" % self.image)
+            print('Image path specified, reading from %s' % self.image)
 
         bgr = cv2.imread(self.image)
         im = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
@@ -174,17 +174,17 @@ class Vision:
 
         if self.display:
             # Show the images
-            cv2.imshow("Original", cv2.cvtColor(im, cv2.COLOR_HSV2BGR))
+            cv2.imshow('Original', cv2.cvtColor(im, cv2.COLOR_HSV2BGR))
 
             if mask is not None:
-                cv2.imshow("Mask", mask)
+                cv2.imshow('Mask', mask)
 
             cv2.waitKey(0)
             cv2.destroyAllWindows()
 
     def run_video(self):
         if self.verbose:
-            print("No image path specified, reading from camera video feed")
+            print('No image path specified, reading from camera video feed')
 
         camera = WebcamVideoStream(src=self.source).start()
 
@@ -195,21 +195,21 @@ class Vision:
         timeout = 0
 
         if self.tuning:
-            cv2.namedWindow("Settings")
-            cv2.resizeWindow("Settings", 700, 350)
+            cv2.namedWindow('Settings')
+            cv2.resizeWindow('Settings', 700, 350)
 
-            cv2.createTrackbar("Lower H", "Settings", self.settings['lower'][0], 255,
+            cv2.createTrackbar('Lower H', 'Settings', self.settings['lower'][0], 255,
                                lambda val: self.update_thresh(True, 0, val))
-            cv2.createTrackbar("Lower S", "Settings", self.settings['lower'][1], 255,
+            cv2.createTrackbar('Lower S', 'Settings', self.settings['lower'][1], 255,
                                lambda val: self.update_thresh(True, 1, val))
-            cv2.createTrackbar("Lower V", "Settings", self.settings['lower'][2], 255,
+            cv2.createTrackbar('Lower V', 'Settings', self.settings['lower'][2], 255,
                                lambda val: self.update_thresh(True, 2, val))
 
-            cv2.createTrackbar("Upper H", "Settings", self.settings['upper'][0], 255,
+            cv2.createTrackbar('Upper H', 'Settings', self.settings['upper'][0], 255,
                                lambda val: self.update_thresh(False, 0, val))
-            cv2.createTrackbar("Upper S", "Settings", self.settings['upper'][1], 255,
+            cv2.createTrackbar('Upper S', 'Settings', self.settings['upper'][1], 255,
                                lambda val: self.update_thresh(False, 1, val))
-            cv2.createTrackbar("Upper V", "Settings", self.settings['upper'][2], 255,
+            cv2.createTrackbar('Upper V', 'Settings', self.settings['upper'][2], 255,
                                lambda val: self.update_thresh(False, 2, val))
 
         bgr = np.zeros(shape=(360, 640, 3), dtype=np.uint8)
@@ -224,29 +224,29 @@ class Vision:
 
                 if self.display:
                     if im is not None:
-                        cv2.imshow("Original", cv2.cvtColor(im, cv2.COLOR_HSV2BGR))
+                        cv2.imshow('Original', cv2.cvtColor(im, cv2.COLOR_HSV2BGR))
                     if mask is not None:
-                        cv2.imshow("Mask", mask)
+                        cv2.imshow('Mask', mask)
 
-                if cv2.waitKey(1) & 0xFF == ord("q"):
+                if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
             else:
                 if timeout == 0:
                     timeout = time.time()
 
                 if time.time() - timeout > 5.0:
-                    print("Camera search timed out!")
+                    print('Camera search timed out!')
                     break
 
         if self.tuning:
-            setting_names = ["Lower H", "Lower S", "Lower V", "Upper H", "Upper S", "Upper V"]
+            setting_names = ['Lower H', 'Lower S', 'Lower V', 'Upper H', 'Upper S', 'Upper V']
 
-            if not os.path.exists("settings"):
-                os.makedirs("settings")
+            if not os.path.exists('settings'):
+                os.makedirs('settings')
 
-            with open("settings/save-{}.thr".format(round(time.time() * 1000)), "w") as thresh_file:
+            with open('settings/save-{}.thr'.format(round(time.time() * 1000)), 'w') as thresh_file:
                 values = enumerate(self.settings['lower'].tolist() + self.settings['upper'].tolist())
-                thresh_file.writelines(["{}: {}\n".format(setting_names[num], value[0])
+                thresh_file.writelines(['{}: {}\n'.format(setting_names[num], value[0])
                                         for num, value in values])
 
         camera.stop()

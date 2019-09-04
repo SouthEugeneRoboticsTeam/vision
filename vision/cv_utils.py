@@ -9,9 +9,9 @@ import numpy as np
 
 from . import args
 
-verbose = args["verbose"]
-display = args["display"]
-camera_file = args["camera"]
+verbose = args['verbose']
+display = args['display']
+camera_file = args['camera']
 
 # Points comprising 3D model of target
 full_model_points = np.array([
@@ -29,8 +29,8 @@ full_model_points = np.array([
 with open(camera_file) as f:
     data = json.load(f)
 
-    camera_matrix = np.array(data["camera_matrix"], dtype="double")
-    dist_coeffs = np.array(data["distortion"], dtype="double")
+    camera_matrix = np.array(data['camera_matrix'], dtype='double')
+    dist_coeffs = np.array(data['distortion'], dtype='double')
 
 
 def process_image(im, goal, blobs):
@@ -86,7 +86,7 @@ def process_image(im, goal, blobs):
     if verbose:
         print(model_points, image_points)
         print(distance, robot_angle, target_angle, rvec)
-        print("X: {}, Y: {}".format(x_distance, y_distance))
+        print('X: {}, Y: {}'.format(x_distance, y_distance))
 
     if display:
         (endpoint2D, jacobian) = cv2.projectPoints(np.array([(0.0, 0.0, 6.0)]), rvec, tvec, camera_matrix, dist_coeffs)
@@ -182,7 +182,7 @@ def get_all(im):
 
 def draw_offset(im, offset_x, offset_y, point, size, color):
     font = cv2.FONT_HERSHEY_SIMPLEX
-    offset_string = "(" + str(offset_x) + ", " + str(offset_y) + ")"
+    offset_string = '(' + str(offset_x) + ', ' + str(offset_y) + ')'
     cv2.putText(im, offset_string, point, font, size, color)
 
 
@@ -207,7 +207,7 @@ def compute_output_values(rvec, tvec):
 
 
 def order_points(pts):
-    rect = np.zeros((4, 2), dtype="float32")
+    rect = np.zeros((4, 2), dtype='float32')
 
     s = pts.sum(axis=1)
     rect[0] = pts[np.argmin(s)]
@@ -236,7 +236,7 @@ def four_point_transform(im, pts):
         [0, 0],
         [maxWidth - 1, 0],
         [maxWidth - 1, maxHeight - 1],
-        [0, maxHeight - 1]], dtype="float32")
+        [0, maxHeight - 1]], dtype='float32')
 
     M = cv2.getPerspectiveTransform(rect, dst)
     warped = cv2.warpPerspective(im, M, (maxWidth, maxHeight))
