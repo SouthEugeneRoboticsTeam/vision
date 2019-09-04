@@ -55,6 +55,10 @@ SERT's vision software comes with a connection status GUI to help debug
 connection issues. This GUI can be displayed on a monitor connected to
 the co-processor. We use an [Adafruit 5" screen](https://www.adafruit.com/product/2260).
 
+- `RADIO` checks connection to the robot's radio (at `10.XX.XX.1`)
+- `ROBOT` checks connection to the roboRIO (at `10.XX.XX.2`)
+- `NTABL` checks connection to the NetworkTables server on the roboRIO
+
 | Good    | Warning | Bad     |
 |---------|---------|---------|
 | Connection is good and system is ready. | Some connections are down. | No connection. Ensure ethernet is plugged in. |
