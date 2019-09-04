@@ -43,8 +43,8 @@ First, `cd` to this repository and then run `docker build . -t vision`. All exis
 
 This will produce a docker image which can be run using:
 
-```
-docker run --device /dev/video0 vision
+```bash
+$ docker run --device /dev/video0 vision
 ```
 
 Make sure that you have a camera connected before running this!
