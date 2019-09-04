@@ -8,6 +8,8 @@ then
   exit 1
 fi
 
+v4l2-ctl --device $1 --set-fmt-video=width=640,height=360,pixelformat=YUYV
+
 v4l2-ctl --device $1 \
   -c brightness=30 \
   -c contrast=10 \

@@ -9,13 +9,19 @@ import numpy as np
 from imutils.video import WebcamVideoStream
 
 import vision.cv_utils as cv_utils
-from vision.network_utils import put, flush, settings_table
+from vision.network_utils import put, flush, table, settings_table
+from vision.centroid_tracker import CentroidTracker
 from . import args
 
 
 class Vision:
     def __init__(self):
         self.args = args
+
+        self.tracker = CentroidTracker()
+
+        self.locked = False
+        self.lock_id = None
 
         self.settings = {
             'lower': np.array(self.args["lower_color"]),
@@ -45,6 +51,7 @@ class Vision:
 
         self.put_settings()
 
+        table.addEntryListener(self.lock_listener, immediateNotify=True, localNotify=True, key='locked')
         settings_table.addEntryListener(self.settings_listener, immediateNotify=True, localNotify=True)
 
         if self.verbose:
@@ -56,7 +63,13 @@ class Vision:
         else:
             self.run_video()
 
-    def do_image(self, im, blobs, mask):
+    def do_image(self, im):
+        blobs, mask = cv_utils.get_blobs(im, self.settings['lower'], self.settings['upper'])
+
+        if not self.locked:
+            self.tracker.deregister_all()
+            return im, mask
+
         found_blob = False
 
         # Create array of contour areas
@@ -67,6 +80,7 @@ class Vision:
 
         goals = []
         prev_target = None
+        prev_blob = None
         for bounding_rect, blob in sorted_blobs:
             if blob is not None and mask is not None:
                 x, y, w, h = bounding_rect
@@ -95,32 +109,60 @@ class Vision:
                         sum = abs(prev_target[2]) - abs(target[2])
 
                         if sum < 0:
-                            goals.append((prev_target, target))
+                            goals.append(((prev_target, target), (prev_blob, blob)))
 
                     prev_target = target
+                    prev_blob = blob
 
-        goal_centers = [cv_utils.process_image(im, goal) for goal in goals]
-        possible_goals = sorted(zip(goal_centers, goals), key=lambda x: abs(x[0][0]))
+        if len(goals) > 0:
+            goal_centers = None
 
-        if len(possible_goals) > 0:
-            centers, goal = possible_goals[0]
+            try:
+                goal_centers = [cv_utils.process_image(im, goal[0], goal[1]) for goal in goals]
+            except:
+                pass
 
-            robot_angle, target_angle, x_distance, y_distance, distance = centers
+            if goal_centers is None:
+                return im, mask
 
-            put("distance", distance)
-            put("x_distance", x_distance)
-            put("y_distance", y_distance + 16.0)  # Add 1/2 robot length
-            put("robot_angle", robot_angle)
-            put("target_angle", target_angle)
+            possible_goals = sorted(zip(goal_centers, goals), key=lambda x: abs(x[0][0] + x[0][1]))
 
-            found_blob = True
+            objects = self.tracker.update([centers[5] for centers, _ in possible_goals])
+
+            centers = None
+            goal = None
+
+            if self.lock_id is None:
+                probable_goal = possible_goals[0]
+
+                centers, goal = probable_goal
+                for index in objects:
+                    if centers[5] == objects[index]:
+                        self.lock_id = index
+                        break
+            else:
+                try:
+                    centers, goal = next(filter(lambda goal: goal[0][5] == objects[self.lock_id], possible_goals))
+                except Exception:
+                    print("Exception while finding goal with lock id")
+
+            if centers is not None:
+                robot_angle, target_angle, x_distance, y_distance, distance, _ = centers
+
+                put("distance", distance)
+                put("x_distance", x_distance)
+                put("y_distance", y_distance)
+                put("robot_angle", robot_angle)
+                put("target_angle", target_angle)
+
+                found_blob = True
 
         put("found", found_blob)
 
         # Send the data to NetworkTables
         flush()
 
-        return im
+        return im, mask
 
     def run_image(self):
         if self.verbose:
@@ -128,10 +170,7 @@ class Vision:
 
         bgr = cv2.imread(self.image)
         im = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
-
-        blobs, mask = cv_utils.get_blobs(im, self.settings['lower'], self.settings['upper'])
-
-        im = self.do_image(im, blobs, mask)
+        im, mask = self.do_image(im)
 
         if self.display:
             # Show the images
@@ -173,21 +212,19 @@ class Vision:
             cv2.createTrackbar("Upper V", "Settings", self.settings['upper'][2], 255,
                                lambda val: self.update_thresh(False, 2, val))
 
-        bgr = np.zeros(shape=(480, 640, 3), dtype=np.uint8)
-        im = np.zeros(shape=(480, 640, 3), dtype=np.uint8)
+        bgr = np.zeros(shape=(360, 640, 3), dtype=np.uint8)
+        im = np.zeros(shape=(360, 640, 3), dtype=np.uint8)
 
         while True:
             bgr = camera.read()
 
             if bgr is not None:
-                im = cv2.cvtColor(cv2.resize(bgr, (640, 480), 0, 0), cv2.COLOR_BGR2HSV)
-
-                blobs, mask = cv_utils.get_blobs(im, self.settings['lower'], self.settings['upper'])
-
-                im = self.do_image(im, blobs, mask)
+                im = cv2.cvtColor(cv2.resize(bgr, (640, 360), 0, 0), cv2.COLOR_BGR2HSV)
+                im, mask = self.do_image(im)
 
                 if self.display:
-                    cv2.imshow("Original", cv2.cvtColor(im, cv2.COLOR_HSV2BGR))
+                    if im is not None:
+                        cv2.imshow("Original", cv2.cvtColor(im, cv2.COLOR_HSV2BGR))
                     if mask is not None:
                         cv2.imshow("Mask", mask)
 
@@ -223,7 +260,13 @@ class Vision:
 
         self.put_settings()
 
-    def settings_listener(self, source, key, value, isNew):
+    def lock_listener(self, source, key, value, is_new):
+        self.locked = value
+
+        if not value:
+            self.lock_id = None
+
+    def settings_listener(self, source, key, value, is_new):
         key_parts = key.split('_')
         if key_parts[0] == 'lower' or key_parts[0] == 'upper':
             index = 0 if key_parts[1] == 'H' else 1 if key_parts[1] == 'S' in key else 2

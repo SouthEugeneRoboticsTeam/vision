@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import json
 import math
 
 import cv2
@@ -10,37 +11,37 @@ from . import args
 
 verbose = args["verbose"]
 display = args["display"]
-
-target_offset = (16.0 + 36.0) * -1
+camera_file = args["camera"]
 
 # Points comprising 3D model of target
-model_points = np.array([
-    (-5.938, 2.938, target_offset),
-    (-4.063, 2.375, target_offset),
-    (-5.438, -2.938, target_offset),
-    (-7.375, -2.500, target_offset),
+full_model_points = np.array([
+    (-5.938, 2.938, 0.0),
+    (-4.063, 2.375, 0.0),
+    (-5.438, -2.938, 0.0),
+    (-7.375, -2.500, 0.0),
 
-    (3.938, 2.375, target_offset),
-    (5.875, 2.875, target_offset),
-    (7.313, -2.500, target_offset),
-    (5.375, -2.938, target_offset),
+    (3.938, 2.375, 0.0),
+    (5.875, 2.875, 0.0),
+    (7.313, -2.500, 0.0),
+    (5.375, -2.938, 0.0),
 ])
 
+with open(camera_file) as f:
+    data = json.load(f)
 
-def process_image(im, goal):
-    # Calculated camera matrix
-    camera_matrix = np.array(
-        [[670.54273808, 0., 347.71623038],
-         [0., 678.11163899, 238.40313974],
-         [0., 0., 1.]], dtype="double"
-    )
+    camera_matrix = np.array(data["camera_matrix"], dtype="double")
+    dist_coeffs = np.array(data["distortion"], dtype="double")
 
-    # Distortion coefficients, from checkerboard vision
-    dist_coeffs = np.array([2.06743428e-01, -1.65831760e+00, 1.06922781e-03, 1.03675715e-02, 3.33870248e+00])
-    # dist_coeffs = np.zeros((4, 1))
 
+def process_image(im, goal, blobs):
     right_target = goal[0]
     left_target = goal[1]
+
+    right_blob = blobs[0]
+    left_blob = blobs[1]
+
+    right_area = cv2.contourArea(right_blob)
+    left_area = cv2.contourArea(left_blob)
 
     # Find center of goal
     left_center_x = left_target[0][0]
@@ -51,41 +52,77 @@ def process_image(im, goal):
     center_x = (left_center_x + right_center_x) / 2
     center_y = (left_center_y + right_center_y) / 2
 
-    left_points = order_points(np.int0(cv2.boxPoints(left_target))).tolist()
-    right_points = order_points(np.int0(cv2.boxPoints(right_target))).tolist()
+    model_points = full_model_points
 
-    image_points = np.array(left_points + right_points)
+    right_peri = cv2.arcLength(right_blob, True)
+    right_approx = cv2.approxPolyDP(right_blob, 0.01 * right_peri, True)
+
+    left_peri = cv2.arcLength(left_blob, True)
+    left_approx = cv2.approxPolyDP(left_blob, 0.01 * left_peri, True)
+
+    left_box_points = order_points(np.int0(cv2.boxPoints(left_target))).tolist()
+    right_box_points = order_points(np.int0(cv2.boxPoints(right_target))).tolist()
+
+    left_points = order_points(np.int0([x[0] for x in left_approx])).tolist()
+    right_points = order_points(np.int0([x[0] for x in right_approx])).tolist()
+
+    sorted_left_points, delete_left = filter_points_to_box(left_points, left_box_points, left_area)
+    sorted_right_points, delete_right = filter_points_to_box(right_points, right_box_points, right_area, offset=4)
+    delete_model_points = delete_left + delete_right
+
+    model_points = np.delete(model_points, delete_model_points, 0)
+    image_points = np.array(sorted_left_points + sorted_right_points)
 
     # Calculate rotation vector and translation vector
     (ret, rvec, tvec) = cv2.solvePnP(model_points, image_points, camera_matrix, dist_coeffs)
-
-    (endpoint2D, jacobian) = cv2.projectPoints(np.array([(0.0, 0.0, 6.0)]), rvec, tvec, camera_matrix, dist_coeffs)
 
     distance, robot_angle, target_angle = compute_output_values(rvec, tvec)
 
     x_distance = np.sin(robot_angle) * distance
     y_distance = np.cos(robot_angle) * distance
 
+    centroid = (int(center_x), int(center_y))
+
     if verbose:
+        print(model_points, image_points)
         print(distance, robot_angle, target_angle, rvec)
         print("X: {}, Y: {}".format(x_distance, y_distance))
 
     if display:
+        (endpoint2D, jacobian) = cv2.projectPoints(np.array([(0.0, 0.0, 6.0)]), rvec, tvec, camera_matrix, dist_coeffs)
+
         cv2.circle(im, (int(left_center_x), int(left_center_y)), 3, (0, 0, 255), -1)
         cv2.circle(im, (int(right_center_x), int(right_center_y)), 3, (0, 0, 255), -1)
 
         for p in image_points:
-            cv2.circle(im, (int(p[0]), int(p[1])), 3, (0, 0, 255), -1)
+            cv2.circle(im, (int(p[0]), int(p[1])), 2, (0, 0, 255), -1)
 
-        p1 = (int(center_x), int(center_y))
         p2 = (int(endpoint2D[0][0][0]), int(endpoint2D[0][0][1]))
 
         try:
-            cv2.line(im, p1, p2, (255, 0, 0), 2)
+            cv2.line(im, centroid, p2, (0, 255, 255), 2)
         except OverflowError:
             pass
 
-    return robot_angle, target_angle, x_distance, y_distance, distance
+    return np.rad2deg(robot_angle), np.rad2deg(target_angle), x_distance, y_distance, distance, centroid
+
+
+def filter_points_to_box(real_points, box_points, area, offset=0):
+    filtered_points = []
+    delete_model_points = []
+
+    if len(real_points) == len(box_points):
+        for i, points in enumerate(zip(real_points, box_points)):
+            point, box_point = points
+            dist = (point[0] - box_point[0]) ** 2.0 + (point[1] - box_point[1]) ** 2.0
+            ratio = dist / area
+
+            if ratio > 0.04:
+                delete_model_points.append(offset + i)
+            else:
+                filtered_points.append(point)
+
+    return filtered_points, delete_model_points
 
 
 def draw_images(im, rect, box):
@@ -93,14 +130,14 @@ def draw_images(im, rect, box):
     im_rect = im.copy()
 
     # Draw rectangle around goal
-    cv2.drawContours(im_rect, [box], 0, (255, 0, 0), 2)
+    cv2.drawContours(im_rect, [box], 0, (40, 225, 245), 2)
 
     # Find center of goal
     center_x = int(rect[0][0])
     center_y = int(rect[0][1])
 
     # Draw point on center of goal
-    cv2.circle(im_rect, (center_x, center_y), 2, (255, 0, 0), thickness=3)
+    cv2.circle(im_rect, (center_x, center_y), 2, (255, 0, 0), -1)
 
     return im_rect
 

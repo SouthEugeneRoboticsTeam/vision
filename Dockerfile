@@ -1,5 +1,6 @@
 FROM valian/docker-python-opencv-ffmpeg:py3
 
+ADD cameras app/cameras
 ADD config app/config
 ADD tests app/tests
 ADD vision app/vision

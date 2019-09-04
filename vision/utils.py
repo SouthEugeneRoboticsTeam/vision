@@ -18,6 +18,8 @@ def get_args():
     parser.add_argument("-n", "--name", type=str, default="camera", help="the name of this camera")
     parser.add_argument("-s", "--source", type=str, default="/dev/video0",
                         help="path to video source (default=/dev/video0)")
+    parser.add_argument("-c", "--camera", type=str, default="cameras/camera1_16-9.cam",
+                        help="path to camera file (default=camera/camera1_4-3.cam)")
     parser.add_argument("-t", "--team", type=int, help="the team of the target roboRIO")
     parser.add_argument("-d", "--display", action="store_true", help="display results of processing in a new window")
     parser.add_argument("-na", "--min-area", type=int, help="minimum area for blobs")
