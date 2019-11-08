@@ -49,12 +49,15 @@ def process_image(im, goal, blobs):
     right_center_x = right_target[0][0]
     right_center_y = right_target[0][1]
 
+    # Find the center between the two goals
     center_x = (left_center_x + right_center_x) / 2
     center_y = (left_center_y + right_center_y) / 2
 
     model_points = full_model_points
 
+    # Calculate perimeter
     right_peri = cv2.arcLength(right_blob, True)
+    # Approximate contour shape
     right_approx = cv2.approxPolyDP(right_blob, 0.01 * right_peri, True)
 
     left_peri = cv2.arcLength(left_blob, True)
@@ -132,7 +135,7 @@ def draw_images(im, rect, box):
     # Draw rectangle around goal
     cv2.drawContours(im_rect, [box], 0, (40, 225, 245), 2)
 
-    # Find center of goal
+    # Get center of goal
     center_x = int(rect[0][0])
     center_y = int(rect[0][1])
 
@@ -141,14 +144,13 @@ def draw_images(im, rect, box):
 
     return im_rect
 
-
+# Finds a blob, if one exists
 def get_blobs(im, lower, upper):
-    # Finds a blob, if one exists
 
-    # Create mask of green
+    # Create mask of green where white pixels represent pixels in the image that fall within the upper and lower range
     mask = cv2.inRange(im, lower, upper)
 
-    # Get largest blob
+    # Get all the contours from the masked image
     blobs = get_all(mask)
 
     if blobs is not None:
@@ -185,9 +187,11 @@ def draw_offset(im, offset_x, offset_y, point, size, color):
     offset_string = '(' + str(offset_x) + ', ' + str(offset_y) + ')'
     cv2.putText(im, offset_string, point, font, size, color)
 
-
+# Returns the proportion of the image that's actually filled
 def get_percent_full(goal):
+    # Returns the number of pixels that are not black
     non_zero = cv2.countNonZero(goal)
+    # Calculate the total number of pixels in the image
     total = goal.shape[0] * goal.shape[1]
     return float(non_zero) / float(total)
 
@@ -205,7 +209,8 @@ def compute_output_values(rvec, tvec):
     angle2 = math.atan2(pzero_world[0][0], pzero_world[2][0])
     return distance, angle1, angle2
 
-
+# See https://www.pyimagesearch.com/2014/08/25/4-point-opencv-getperspective-transform-example/
+# Orders array of 4 rectangle points in top-left, top-right, bottom-right, and bottom-left order.
 def order_points(pts):
     rect = np.zeros((4, 2), dtype='float32')
 
@@ -219,7 +224,7 @@ def order_points(pts):
 
     return rect
 
-
+# See https://www.pyimagesearch.com/2014/08/25/4-point-opencv-getperspective-transform-example/
 def four_point_transform(im, pts):
     rect = order_points(pts)
     (tl, tr, br, bl) = pts
