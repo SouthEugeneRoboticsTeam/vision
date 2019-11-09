@@ -45,7 +45,7 @@ class Vision:
         # Whether to print log values to the console
         self.verbose = self.args['verbose']
 
-        # Path to video source
+        # Path to video source (or camera number if integer)
         self.source = self.args['source']
         if self.source.isdigit():
             self.source = int(self.source)
@@ -213,7 +213,7 @@ class Vision:
         if self.verbose:
             print('No image path specified, reading from camera video feed')
 
-        # Start the camera stream
+        # Start reading images from the camera
         camera = WebcamVideoStream(src=self.source).start()
 
         # Set stream size -- TODO: figure out why this isn't working
@@ -222,7 +222,7 @@ class Vision:
 
         timeout = 0
 
-        # Create trackbars to tune lower and upper hsv values if in tuning mode
+        # Create trackbars to tune lower and upper HSV values if in tuning mode
         if self.tuning:
             cv2.namedWindow('Settings')
             cv2.resizeWindow('Settings', 700, 350)
@@ -243,6 +243,7 @@ class Vision:
 
         # Initializes array that stores raw camera frame outputs in the BGR color space
         bgr = np.zeros(shape=(360, 640, 3), dtype=np.uint8)
+        # Initializes array that stores camera frame outputs in the HSV color space
         im = np.zeros(shape=(360, 640, 3), dtype=np.uint8)
 
         while True:
@@ -303,7 +304,7 @@ class Vision:
         if not value:
             self.lock_id = None
 
-    # Updates self.settings with values sent over NetworkTables
+    # Updates settings with values sent over NetworkTables
     def settings_listener(self, source, key, value, is_new):
         key_parts = key.split('_')
         if key_parts[0] == 'lower' or key_parts[0] == 'upper':
