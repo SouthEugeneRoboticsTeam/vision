@@ -144,9 +144,9 @@ def draw_images(im, rect, box):
 
     return im_rect
 
+
 # Finds a blob, if one exists
 def get_blobs(im, lower, upper):
-
     # Create mask of green where white pixels represent pixels in the image that fall within the upper and lower range
     mask = cv2.inRange(im, lower, upper)
 
@@ -187,6 +187,7 @@ def draw_offset(im, offset_x, offset_y, point, size, color):
     offset_string = '(' + str(offset_x) + ', ' + str(offset_y) + ')'
     cv2.putText(im, offset_string, point, font, size, color)
 
+
 # Returns the proportion of the image that's actually filled
 def get_percent_full(goal):
     # Returns the number of pixels that are not black
@@ -209,6 +210,7 @@ def compute_output_values(rvec, tvec):
     angle2 = math.atan2(pzero_world[0][0], pzero_world[2][0])
     return distance, angle1, angle2
 
+
 # See https://www.pyimagesearch.com/2014/08/25/4-point-opencv-getperspective-transform-example/
 # Orders array of 4 rectangle points in top-left, top-right, bottom-right, and bottom-left order.
 def order_points(pts):
@@ -223,6 +225,7 @@ def order_points(pts):
     rect[3] = pts[np.argmax(diff)]
 
     return rect
+
 
 # See https://www.pyimagesearch.com/2014/08/25/4-point-opencv-getperspective-transform-example/
 def four_point_transform(im, pts):

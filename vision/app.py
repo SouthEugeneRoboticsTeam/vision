@@ -125,13 +125,12 @@ class Vision:
                         im = cv_utils.draw_images(im, target, box)
 
                     if prev_target is not None:
-                        # Calculate the difference in angles between the previous and current target
                         sum = abs(prev_target[2]) - abs(target[2])
-
-                        # (Add the target as a goal if current target is less titled than previous target?)
+                        # Track both the left and right sides of the vision target
                         if sum < 0:
                             goals.append(((prev_target, target), (prev_blob, blob)))
 
+                    # Left vision tape
                     prev_target = target
                     prev_blob = blob
 
@@ -155,17 +154,20 @@ class Vision:
             centers = None
             goal = None
 
+            # Check if it's the first time locking onto the particular goal
             if self.lock_id is None:
                 # Find the goal closest to where the robot is facing
                 probable_goal = possible_goals[0]
 
                 centers, goal = probable_goal
+                # Assign an id to the goal based on the location of the centroid
                 for index in objects:
                     if centers[5] == objects[index]:
                         self.lock_id = index
                         break
             else:
                 try:
+                    # Find the tracked goal that corresponds to the lock id
                     centers, goal = next(filter(lambda goal: goal[0][5] == objects[self.lock_id], possible_goals))
                 except Exception:
                     print('Exception while finding goal with lock id')
