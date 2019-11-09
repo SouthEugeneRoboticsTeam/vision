@@ -5,6 +5,7 @@ import sys
 
 import configargparse
 
+
 # Returns a dictionary of arguments that can be adjusted through the command line
 def get_args():
     default_config = []
