@@ -55,32 +55,40 @@ def process_image(im, goal, blobs):
 
     model_points = full_model_points
 
-    # Calculate perimeter
+    # Calculate perimeter of the blob
     right_peri = cv2.arcLength(right_blob, True)
-    # Approximate contour shape
+    # Approximate shape of the blob
     right_approx = cv2.approxPolyDP(right_blob, 0.01 * right_peri, True)
 
     left_peri = cv2.arcLength(left_blob, True)
     left_approx = cv2.approxPolyDP(left_blob, 0.01 * left_peri, True)
 
+    # Gets the four coordinates of the target and sort them in a clock-wise fashion starting with the upper left point
     left_box_points = order_points(np.int0(cv2.boxPoints(left_target))).tolist()
     right_box_points = order_points(np.int0(cv2.boxPoints(right_target))).tolist()
 
+    # Gets the vertices of the polygon approximation of the blob and sort them in a clock-wise fashion
     left_points = order_points(np.int0([x[0] for x in left_approx])).tolist()
     right_points = order_points(np.int0([x[0] for x in right_approx])).tolist()
 
+    # Ensure that target points roughly line up with the points of the actual tape
     sorted_left_points, delete_left = filter_points_to_box(left_points, left_box_points, left_area)
     sorted_right_points, delete_right = filter_points_to_box(right_points, right_box_points, right_area, offset=4)
+    # Indices 0-3 refer to points to delete on the left tape, 4-7 refer to points on the right tape
     delete_model_points = delete_left + delete_right
 
+    # Remove target points that were too far away from the tape (off the screen)
     model_points = np.delete(model_points, delete_model_points, 0)
+    # Put left and right tape points into the same array
     image_points = np.array(sorted_left_points + sorted_right_points)
 
     # Calculate rotation vector and translation vector
     (ret, rvec, tvec) = cv2.solvePnP(model_points, image_points, camera_matrix, dist_coeffs)
 
+    # Calculates distance and angles from solvePnP outputs
     distance, robot_angle, target_angle = compute_output_values(rvec, tvec)
 
+    # Calcualtes x and y components of the distance
     x_distance = np.sin(robot_angle) * distance
     y_distance = np.cos(robot_angle) * distance
 
@@ -110,6 +118,7 @@ def process_image(im, goal, blobs):
     return np.rad2deg(robot_angle), np.rad2deg(target_angle), x_distance, y_distance, distance, centroid
 
 
+# Make sure points on the target are less than 4% off from the 4 points defining the actual tape
 def filter_points_to_box(real_points, box_points, area, offset=0):
     filtered_points = []
     delete_model_points = []
@@ -117,9 +126,10 @@ def filter_points_to_box(real_points, box_points, area, offset=0):
     if len(real_points) == len(box_points):
         for i, points in enumerate(zip(real_points, box_points)):
             point, box_point = points
+            # Calculate the sum of the squared differences between the top left and right points on the target and tape
             dist = (point[0] - box_point[0]) ** 2.0 + (point[1] - box_point[1]) ** 2.0
+            # Calculate the ratio of distance and area of the target
             ratio = dist / area
-
             if ratio > 0.04:
                 delete_model_points.append(offset + i)
             else:
@@ -196,14 +206,15 @@ def get_percent_full(goal):
     total = goal.shape[0] * goal.shape[1]
     return float(non_zero) / float(total)
 
-
+# See https://ligerbots.org/docs/whitepapers/LigerBots_Vision_Whitepaper.pdf
 def compute_output_values(rvec, tvec):
     x = tvec[0][0]
     z = tvec[2][0]
-    # distance in the horizontal plane between camera and target
+    # Calculate distance in the horizontal plane between camera and target
     distance = math.sqrt(x ** 2 + z ** 2)
-    # horizontal angle between camera center line and target
+    # Calculate horizontal angle between camera center line and target
     angle1 = math.atan2(x, z)
+    # Unpack rvec into a proper 3x3 rotation matrix
     rot, _ = cv2.Rodrigues(rvec)
     rot_inv = rot.transpose()
     pzero_world = np.matmul(rot_inv, -tvec)
