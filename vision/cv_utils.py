@@ -206,6 +206,7 @@ def get_percent_full(goal):
     total = goal.shape[0] * goal.shape[1]
     return float(non_zero) / float(total)
 
+
 # See https://ligerbots.org/docs/whitepapers/LigerBots_Vision_Whitepaper.pdf
 def compute_output_values(rvec, tvec):
     x = tvec[0][0]
