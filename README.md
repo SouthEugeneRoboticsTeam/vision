@@ -64,6 +64,8 @@ the co-processor. We use an [Adafruit 5" screen](https://www.adafruit.com/produc
 | Connection is good and system is ready. | Some connections are down. | No connection. Ensure ethernet is plugged in. |
 |![good](./images/vision_good.png)|![good](./images/vision_warn.png)|![good](./images/vision_bad.png)|
 
+![installed GUI](./images/installed_gui.jpg)
+
 ## Configuration
 
 ### Command-Line Options
