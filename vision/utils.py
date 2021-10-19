@@ -6,9 +6,11 @@ import sys
 import configargparse
 
 
+# Returns a dictionary of arguments that can be adjusted through the command line
 def get_args():
     default_config = []
 
+    # Get default config arguments from the config.ini file
     if '-cf' not in sys.argv and '--config' not in sys.argv:
         default_config = [os.getenv('VISION_CONFIG', os.path.join(os.path.dirname(__file__), '../config/config.ini'))]
 
